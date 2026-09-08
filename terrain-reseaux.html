@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Terrain 3 — Les réseaux</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Manrope:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-dark:#3F22EC;
+    --navy:#2E18B8;
+    --rose:#FA58A7;
+    --rose-bright:#FF7EC2;
+    --orange:#EFCA62;
+    --violet:#03E29D;
+    --violet-bright:#4DFFC0;
+    --yellow:#DFF700;
+    --yellow-deep:#7A8600;
+    --cream:#FFFFFF;
+    --cream-soft:#F1EEF7;
+    --grey:#5B6472;
+    --white:#FFFFFF;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Manrope', sans-serif;
+    background:var(--cream);
+    color:var(--navy-dark);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{font-family:'Sora', sans-serif;}
+  a{text-decoration:none; color:inherit;}
+
+  nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px 64px;
+    position:sticky; top:0; z-index:20;
+    background:rgba(251,245,239,0.88);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(13,31,60,0.08);
+  }
+  .logo{font-family:'Sora', sans-serif; font-weight:800; font-size:19px; display:flex; align-items:center; gap:10px; color:var(--navy-dark);}
+  .logo-mark{width:30px; height:30px; border-radius:9px; background:linear-gradient(135deg, var(--rose) 0%, var(--violet) 100%); display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:13px;}
+  .back-link{display:flex; align-items:center; gap:8px; font-size:14px; font-weight:700; color:var(--navy-dark); opacity:0.75;}
+  .nav-cta{background:var(--navy-dark); color:var(--cream); padding:11px 22px; border-radius:99px; font-size:13.5px; font-weight:700;}
+
+  /* ---------- HERO ---------- */
+  .terrain-hero{
+    padding:56px 64px 60px;
+    background:var(--navy-dark);
+    position:relative; overflow:hidden;
+  }
+  .terrain-hero::before{
+    content:''; position:absolute; top:-120px; right:-80px; width:340px; height:340px;
+    background:var(--yellow); opacity:0.35; border-radius:50%; filter:blur(20px);
+  }
+  .th-inner{position:relative; max-width:720px;}
+  .th-kicker{display:flex; align-items:center; gap:10px; margin-bottom:20px;}
+  .th-kicker .num{
+    width:30px; height:30px; border-radius:9px; background:var(--yellow);
+    display:flex; align-items:center; justify-content:center; color:var(--navy-dark); font-weight:800; font-size:13px;
+  }
+  .th-kicker span{color:#AEB9CC; font-weight:700; font-size:13px;}
+  .terrain-hero h1{color:white; font-size:42px; font-weight:800; line-height:1.12; letter-spacing:-0.3px;}
+  .terrain-hero p{color:#C9D2E0; margin-top:18px; font-size:16px; line-height:1.65; max-width:600px;}
+  .th-stats{display:flex; gap:34px; margin-top:32px;}
+  .th-stat b{color:white; font-family:'Sora',sans-serif; font-size:22px; display:block;}
+  .th-stat span{color:#8FA0BC; font-size:12.5px; font-weight:600;}
+
+  /* ---------- SECTIONS ---------- */
+  .section{padding:64px 64px;}
+  .section-head{max-width:600px; margin-bottom:38px;}
+  .section-head .kicker{color:var(--rose); font-weight:700; font-size:13.5px; margin-bottom:10px; display:block;}
+  .section-head h2{font-size:28px; font-weight:800; letter-spacing:-0.3px;}
+  .section-head p{color:var(--grey); margin-top:12px; font-size:15px; line-height:1.6;}
+
+  /* jobs grid */
+  .jobs-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+  .job-card{
+    border-radius:20px; padding:26px; position:relative; overflow:hidden; min-height:196px;
+    cursor:pointer; transition:transform .15s ease, box-shadow .15s ease;
+    text-align:left; width:100%; font-family:'Manrope',sans-serif; display:block;
+    background:var(--yellow);
+  }
+  .job-card::after{content:''; position:absolute; left:0; right:0; bottom:0; height:10px; background:repeating-linear-gradient(-45deg, rgba(255,255,255,0.3) 0 6px, transparent 6px 12px);}
+  .job-card:hover{transform:translateY(-4px) rotate(-0.3deg); box-shadow:0 16px 30px rgba(13,31,60,0.2);}
+  .job-card .jc-icon{width:38px; height:38px; border-radius:11px; background:rgba(255,255,255,0.92); display:flex; align-items:center; justify-content:center; color:var(--yellow); font-size:16px; margin-bottom:16px; position:relative; z-index:1;}
+  .job-card h3{font-size:15.5px; font-weight:800; margin-bottom:8px; color:var(--navy-dark); font-family:'Sora',sans-serif; position:relative; z-index:1;}
+  .job-card p{font-size:13px; line-height:1.5; color:rgba(13,31,60,0.75); position:relative; z-index:1;}
+  .job-card .jc-open{margin-top:14px; font-size:12px; font-weight:800; color:var(--navy-dark); position:relative; z-index:1;}
+  .job-card .jc-icon{background:rgba(13,31,60,0.9) !important; color:var(--yellow) !important;}
+  .job-card::after{background:repeating-linear-gradient(-45deg, rgba(13,31,60,0.16) 0 6px, transparent 6px 12px) !important;}
+
+  /* domaines (savoirs) — cartes plus sobres, secondaires */
+  .domain-card{background:var(--white); border-radius:20px; padding:26px; border:1px solid rgba(13,31,60,0.06);}
+  .domain-card .jc-icon{width:38px; height:38px; border-radius:11px; background:var(--yellow); display:flex; align-items:center; justify-content:center; color:var(--navy-dark); font-size:16px; margin-bottom:16px;}
+  .domain-card h3{font-size:15.5px; font-weight:700; margin-bottom:8px; color:var(--navy-dark);}
+  .domain-card p{font-size:13px; line-height:1.5; color:var(--grey);}
+
+  /* timeline */
+  .timeline{background:var(--white); border-radius:22px; padding:40px; border:1px solid rgba(13,31,60,0.06);}
+  .tl-item{display:grid; grid-template-columns:80px 20px 1fr; gap:0; position:relative;}
+  .tl-item:not(:last-child){padding-bottom:30px;}
+  .tl-item:not(:last-child)::after{
+    content:''; position:absolute; left:88px; top:22px; bottom:0; width:2px; background:var(--cream-soft);
+  }
+  .tl-time{font-weight:800; color:var(--yellow-deep); font-size:13px; padding-top:2px;}
+  .tl-dot{width:11px; height:11px; border-radius:50%; background:var(--yellow); margin-top:3px; position:relative; z-index:1;}
+  .tl-content h4{font-size:15px; font-weight:700; margin-bottom:4px;}
+  .tl-content p{font-size:13.5px; color:var(--grey); line-height:1.55;}
+
+  /* skills */
+  .skills-list{display:flex; flex-direction:column; gap:14px;}
+  .skill-row{display:flex; gap:16px; align-items:flex-start; background:var(--white); border-radius:16px; padding:20px 22px; border:1px solid rgba(13,31,60,0.06);}
+  .skill-check{width:26px; height:26px; border-radius:50%; background:var(--rose); flex-shrink:0; display:flex; align-items:center; justify-content:center; color:white; font-size:13px; font-weight:800;}
+  .skill-row h4{font-size:14.5px; font-weight:700; margin-bottom:8px;}
+  .skill-row p{font-size:13px; color:var(--grey); line-height:1.5;}
+  .skill-row ul{list-style:none; display:flex; flex-direction:column; gap:6px; margin-top:4px;}
+  .skill-row li{font-size:13px; line-height:1.5; color:var(--grey); padding-left:16px; position:relative;}
+  .skill-row li::before{content:''; position:absolute; left:0; top:7px; width:5px; height:5px; border-radius:50%; background:var(--rose);}
+
+  /* tools */
+  .tools-row{display:flex; flex-wrap:wrap; gap:12px;}
+  .tool-chip{background:var(--white); border:1px solid rgba(13,31,60,0.1); padding:12px 18px; border-radius:12px; font-size:13.5px; font-weight:700; color:var(--navy-dark);}
+
+  /* cta footer */
+  .cta-block{background:var(--navy-dark); border-radius:26px; padding:46px 54px; display:flex; justify-content:space-between; align-items:center; gap:30px;}
+  .cta-block h2{color:white; font-size:23px; font-weight:800; max-width:420px; line-height:1.3;}
+  .cta-block p{color:#AEB9CC; font-size:13.5px; margin-top:8px;}
+  .cta-btn{background:var(--rose); color:white; font-weight:700; font-size:14.5px; padding:15px 24px; border-radius:12px; white-space:nowrap; border:none; cursor:pointer;}
+
+  footer{padding:36px 64px; display:flex; justify-content:space-between; align-items:center; color:var(--grey); font-size:13px;}
+
+  /* ---------- MODAL : FICHE MÉTIER ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(13,31,60,0.55);
+    display:none; align-items:center; justify-content:center; z-index:100; padding:24px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-card{
+    background:var(--white); border-radius:24px; max-width:560px; width:100%;
+    max-height:86vh; overflow-y:auto; padding:38px;
+    position:relative;
+  }
+  .modal-close{
+    position:absolute; top:22px; right:22px; width:34px; height:34px; border-radius:50%;
+    background:var(--cream-soft); border:none; font-size:16px; cursor:pointer; color:var(--navy-dark);
+  }
+  .modal-icon{width:46px; height:46px; border-radius:13px; background:var(--yellow); display:flex; align-items:center; justify-content:center; color:var(--navy-dark); font-size:19px; margin-bottom:20px;}
+  .modal-card h3{font-size:22px; font-weight:800; margin-bottom:6px;}
+  .modal-role{color:var(--yellow-deep); font-weight:700; font-size:13.5px; margin-bottom:20px;}
+  .modal-section{margin-top:20px;}
+  .modal-section h4{font-size:12.5px; font-weight:700; color:var(--grey); text-transform:uppercase; letter-spacing:.03em; margin-bottom:10px;}
+  .modal-section ul{list-style:none; display:flex; flex-direction:column; gap:8px;}
+  .modal-section li{font-size:14px; line-height:1.5; color:var(--navy-dark); padding-left:18px; position:relative;}
+  .modal-section li::before{content:''; position:absolute; left:0; top:8px; width:6px; height:6px; border-radius:50%; background:var(--yellow);}
+  .modal-evol{background:var(--cream); border-radius:14px; padding:16px 18px; margin-top:22px; font-size:13.5px; line-height:1.55; color:var(--grey);}
+  .modal-evol b{color:var(--navy-dark);}
+
+  /* ---------- QUIZ ---------- */
+  .quiz-card{background:var(--white); border-radius:22px; padding:40px; border:1px solid rgba(13,31,60,0.06);}
+  .quiz-progress-label{display:flex; justify-content:space-between; font-size:12.5px; font-weight:700; color:var(--grey); margin-bottom:8px;}
+  .quiz-bar{height:6px; border-radius:99px; background:var(--cream-soft); overflow:hidden; margin-bottom:30px;}
+  .quiz-bar-fill{height:100%; background:var(--rose); border-radius:99px; width:0%; transition:width .3s ease;}
+  .quiz-question{font-size:17px; font-weight:700; margin-bottom:18px;}
+  .quiz-options{display:flex; flex-direction:column; gap:10px;}
+  .quiz-option{
+    text-align:left; background:var(--cream); border:1.5px solid transparent; border-radius:12px;
+    padding:14px 18px; font-size:14.5px; font-weight:600; color:var(--navy-dark); cursor:pointer;
+  }
+  .quiz-option:hover{border-color:rgba(232,25,75,0.3);}
+  .quiz-option.correct{background:#E7F6EC; border-color:#3FAE5C; color:#1F6B34;}
+  .quiz-option.wrong{background:#FCE9EA; border-color:var(--rose); color:var(--rose);}
+  .quiz-option[disabled]{cursor:default;}
+  .quiz-feedback{margin-top:16px; font-size:13.5px; font-weight:600; color:var(--grey); min-height:18px;}
+  .quiz-next{margin-top:22px; background:var(--navy-dark); color:white; font-weight:700; font-size:14px; padding:13px 22px; border-radius:12px; border:none; cursor:pointer; display:none;}
+  .quiz-result{display:none; text-align:center; padding:20px 0;}
+  .quiz-result .qr-score{font-family:'Sora',sans-serif; font-size:44px; font-weight:800; color:var(--rose);}
+  .quiz-result p{color:var(--grey); font-size:14.5px; margin-top:10px; max-width:400px; margin-left:auto; margin-right:auto; line-height:1.55;}
+
+  /* ---------- ORIENTATION QUIZ ---------- */
+  .orient-card{background:var(--white); border-radius:22px; padding:40px; border:1px solid rgba(13,31,60,0.06);}
+  .orient-bar{height:6px; border-radius:99px; background:var(--cream-soft); overflow:hidden; margin-bottom:30px;}
+  .orient-bar-fill{height:100%; background:var(--yellow); border-radius:99px; width:0%; transition:width .3s ease;}
+  .orient-option{
+    text-align:left; background:var(--cream); border:1.5px solid transparent; border-radius:12px;
+    padding:14px 18px; font-size:14.5px; font-weight:600; color:var(--navy-dark); cursor:pointer; width:100%; display:block; margin-bottom:10px; font-family:'Manrope',sans-serif;
+  }
+  .orient-option:hover{border-color:rgba(244,137,74,0.5); background:#FDEEE4;}
+  .orient-result{display:none; text-align:center; padding:10px 0;}
+  .orient-result .or-icon{width:56px; height:56px; border-radius:16px; background:var(--rose); display:flex; align-items:center; justify-content:center; color:white; font-size:24px; margin:0 auto 18px;}
+  .orient-result .or-label{color:var(--grey); font-size:13px; font-weight:700; margin-bottom:6px;}
+  .orient-result h3{font-size:24px; font-weight:800; margin-bottom:10px;}
+  .orient-result p{color:var(--grey); font-size:14.5px; max-width:420px; margin:0 auto 22px; line-height:1.55;}
+  .orient-restart{background:transparent; border:1.5px solid rgba(13,31,60,0.15); color:var(--navy-dark); font-weight:700; font-size:13.5px; padding:11px 20px; border-radius:12px; cursor:pointer; margin-right:10px;}
+  .orient-see{background:var(--navy-dark); color:white; font-weight:700; font-size:13.5px; padding:12px 22px; border-radius:12px; cursor:pointer; border:none;}
+
+  .script{font-family:'Caveat', cursive; font-weight:700;}
+  .doodle{position:absolute; opacity:0.9; pointer-events:none;}
+  .pill-btn{
+    display:inline-flex; align-items:center; gap:10px;
+    font-weight:700; font-size:14.5px; border-radius:99px; border:none; cursor:pointer;
+    text-decoration:none;
+  }
+  .pill-btn .pb-arrow{
+    width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:13px; flex-shrink:0;
+  }
+  .pill-btn.pb-primary{background:var(--rose); color:white; padding:6px 6px 6px 22px;}
+  .pill-btn.pb-primary .pb-arrow{background:white; color:var(--rose);}
+  .pill-btn.pb-dark{background:var(--navy-dark); color:white; padding:6px 6px 6px 22px;}
+  .pill-btn.pb-dark .pb-arrow{background:var(--yellow); color:var(--navy-dark);}
+  .pill-btn.pb-outline{background:transparent; color:white; border:1.5px solid rgba(255,255,255,0.4); padding:6px 6px 6px 22px;}
+  .pill-btn.pb-outline .pb-arrow{background:rgba(255,255,255,0.15); color:white;}
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 1100px){
+    nav{padding:16px 20px;}
+    .back-link{display:none;}
+    .terrain-hero{padding:36px 20px 32px;}
+    .terrain-hero h1{font-size:32px;}
+    .th-stats{flex-wrap:wrap; row-gap:14px;}
+    .section{padding:30px 20px 50px;}
+    .section-head h2{font-size:22px;}
+    .section-head h2 .script{font-size:1.15em !important;}
+    .jobs-grid{grid-template-columns:1fr;}
+    .domain-card{margin-bottom:0;}
+    .jobs-grid, .domain-card, .job-card{width:100%;}
+    .timeline{padding:24px;}
+    .tl-item{grid-template-columns:60px 16px 1fr;}
+    .tl-item::after{left:68px !important;}
+    .quiz-card, .orient-card{padding:24px;}
+    .cta-block{flex-direction:column; align-items:flex-start; padding:32px 24px;}
+    .modal-card{padding:26px; max-height:82vh;}
+    footer{padding:24px 20px; flex-direction:column; gap:8px; text-align:center;}
+  }
+  @media (max-width: 640px){
+    .jobs-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo"><div class="logo-mark">N</div>Ton BTS, en vrai</a>
+  <a href="index.html" class="back-link">← Retour aux 3 terrains</a>
+</nav>
+
+<section class="terrain-hero">
+  <div class="th-inner">
+    <div class="th-kicker"><div class="num">3</div><span>TERRAIN 3</span></div>
+    <h1>Les réseaux</h1>
+    <p>Faire vivre un réseau de distributeurs, de partenaires ou de vendeurs indépendants. Négocier des référencements, contrôler leur application, recruter, former, motiver, développer. Le terrain le plus « business » et le plus stratégique : tu ne gères pas un client, tu fais grandir tout un système de vente.</p>
+    <div class="th-stats">
+      <div class="th-stat"><b>6</b><span>métiers de sortie</span></div>
+      <div class="th-stat"><b>3</b><span>compétences clés</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <span class="kicker">LES MÉTIERS QUE ÇA OUVRE</span>
+    <h2>Des jobs que tu <span class="script" style="color:var(--rose); font-size:1.6em;">croises déjà</span></h2>
+    <p>Tu les as déjà croisés sans le savoir — pas comme futur pro, mais comme client.</p>
+  </div>
+  <div class="jobs-grid">
+    <button class="job-card" onclick="openJob('chefsecteur')"><div class="jc-icon">◈</div><h3>Chef·fe de secteur</h3><p>Le rayon bien rangé avec les bons produits en avant dans ton supermarché ? Quelqu'un négocie et contrôle ça régulièrement.</p><div class="jc-open">Voir la fiche métier ↗</div></button>
+    <button class="job-card" onclick="openJob('animateurdistrib')"><div class="jc-icon">◈</div><h3>Animateur·rice réseau distributeurs</h3><p>La formation qu'un vendeur en magasin reçoit sur un nouveau produit ? Souvent animée par ce métier.</p><div class="jc-open">Voir la fiche métier ↗</div></button>
+    <button class="job-card" onclick="openJob('animateurpartenaires')"><div class="jc-icon">◈</div><h3>Animateur·rice réseau de partenaires</h3><p>Une entreprise qui te recommande un partenaire (assurance, franchise...) ? Quelqu'un anime et fait grandir ce réseau-là.</p><div class="jc-open">Voir la fiche métier ↗</div></button>
+    <button class="job-card" onclick="openJob('vdi')"><div class="jc-icon">◈</div><h3>Conseiller·ère vente à domicile</h3><p>Cette copine ou ce voisin qui organise des réunions à domicile (bijoux, cosmétiques...) ? Un vrai métier commercial.</p><div class="jc-open">Voir la fiche métier ↗</div></button>
+    <button class="job-card" onclick="openJob('recruteur')"><div class="jc-icon">◈</div><h3>Recruteur·se de réseau</h3><p>Ce message qui te propose de devenir "conseillère indépendante" pour une marque ? Quelqu'un recrute et forme ces vendeurs.</p><div class="jc-open">Voir la fiche métier ↗</div></button>
+    <button class="job-card" onclick="openJob('merchandiser')"><div class="jc-icon">◈</div><h3>Merchandiser</h3><p>Le rayon qui change d'agencement pile pour les fêtes ? Quelqu'un a pensé cette mise en scène.</p><div class="jc-open">Voir la fiche métier ↗</div></button>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="section-head">
+    <span class="kicker">POUR T'AIDER À TE PROJETER</span>
+    <h2>Quel métier te <span class="script" style="color:var(--rose); font-size:1.6em;">correspond</span> ?</h2>
+    <p>5 questions un peu plus perso — juste pour t'aider à te projeter, pas pour te mettre dans une case.</p>
+  </div>
+  <div class="orient-card">
+    <div id="orient-body">
+      <div class="orient-progress-label" style="display:flex; justify-content:space-between; font-size:12.5px; font-weight:700; color:var(--grey); margin-bottom:8px;">
+        <span id="orient-step-label">Question 1 / 5</span>
+      </div>
+      <div class="orient-bar"><div class="orient-bar-fill" id="orient-bar-fill"></div></div>
+      <div class="quiz-question" id="orient-question"></div>
+      <div id="orient-options"></div>
+    </div>
+    <div class="orient-result" id="orient-result">
+      <div class="or-icon" id="or-icon">◈</div>
+      <div class="or-label">ON TE VERRAIT BIEN EN</div>
+      <h3 id="or-title"></h3>
+      <p id="or-text"></p>
+      <button class="orient-restart" onclick="restartOrient()">Refaire le test</button>
+      <button class="orient-see" id="or-see-btn">Voir la fiche métier</button>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="section-head">
+    <span class="kicker">UNE JOURNÉE SUR CE TERRAIN</span>
+    <h2>Ça ressemble à ça, pas à un cours magistral</h2>
+  </div>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-time">9h</div><div class="tl-dot"></div>
+      <div class="tl-content"><h4>Tournée de points de vente</h4><p>Tu visites deux ou trois magasins de ton secteur : tu contrôles l'implantation, tu échanges avec les responsables de rayon.</p></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">11h</div><div class="tl-dot"></div>
+      <div class="tl-content"><h4>Négociation d'implantation</h4><p>Tu discutes avec un distributeur pour améliorer la place de tes produits en rayon ou obtenir une nouvelle animation.</p></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">14h</div><div class="tl-dot"></div>
+      <div class="tl-content"><h4>Animation du réseau</h4><p>Tu formes des vendeurs sur un nouveau produit, ou tu accompagnes un partenaire dans le lancement d'une offre.</p></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">16h</div><div class="tl-dot"></div>
+      <div class="tl-content"><h4>Suivi des résultats</h4><p>Tu compares les ventes par point de vente, tu identifies les zones qui décrochent, tu prépares ton prochain passage.</p></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">17h30</div><div class="tl-dot"></div>
+      <div class="tl-content"><h4>Reporting</h4><p>Tu remontes les infos terrain à ton siège : ce qui marche, ce qui bloque, les demandes de tes distributeurs ou partenaires.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="section-head">
+    <span class="kicker">CE QUE TU VAS SAVOIR FAIRE</span>
+    <h2>Les 3 compétences de ce terrain</h2>
+  </div>
+  <div class="skills-list">
+    <div class="skill-row"><div class="skill-check">✓</div><div>
+      <h4>Implanter et promouvoir l'offre chez des distributeurs</h4>
+      <ul>
+        <li>Valoriser l'offre sur le lieu de vente</li>
+        <li>Développer la présence de la marque dans le réseau de distributeurs</li>
+      </ul>
+    </div></div>
+    <div class="skill-row"><div class="skill-check">✓</div><div>
+      <h4>Développer et piloter un réseau de partenaires</h4>
+      <ul>
+        <li>Participer au développement d'un réseau de partenaires</li>
+        <li>Mobiliser le réseau et évaluer ses performances</li>
+      </ul>
+    </div></div>
+    <div class="skill-row"><div class="skill-check">✓</div><div>
+      <h4>Créer et animer un réseau de vente directe</h4>
+      <ul>
+        <li>Prospecter, organiser des rencontres et vendre en réunion</li>
+        <li>Recruter et former des vendeurs indépendants</li>
+        <li>Impulser une dynamique de réseau dans la durée</li>
+      </ul>
+    </div></div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="section-head">
+    <span class="kicker">CE QUE TU VAS APPRENDRE</span>
+    <h2>Les grands domaines de ce terrain</h2>
+    <p>Pas des matières scolaires — des familles de savoir-faire que tu vas travailler tout au long de l'année.</p>
+  </div>
+  <div class="jobs-grid">
+    <div class="domain-card"><div class="jc-icon">◈</div><h3>Négocier avec la grande distribution</h3><p>Négociation avec revendeurs et grande distribution, typologies d'acheteurs, référencement.</p></div>
+    <div class="domain-card"><div class="jc-icon">◈</div><h3>Faire vivre un réseau</h3><p>Organisation d'un réseau de distribution, management du réseau, animation commerciale.</p></div>
+    <div class="domain-card"><div class="jc-icon">◈</div><h3>Vendre et animer en point de vente</h3><p>Techniques de vente en grande distribution, marchandisage, stratégies de distribution.</p></div>
+    <div class="domain-card"><div class="jc-icon">◈</div><h3>Piloter avec la data réseau</h3><p>Data et bases de données réseaux, suivi des ventes, évaluation des équipes commerciales.</p></div>
+    <div class="domain-card"><div class="jc-icon">◈</div><h3>Connaître le cadre des contrats et statuts</h3><p>Droit de la distribution, contrats de partenariat, statuts des vendeurs (VDI, agents...).</p></div>
+    <div class="domain-card"><div class="jc-icon">◈</div><h3>Gérer risques, prix et marges</h3><p>Analyse du risque commercial, politique de prix, gestion des marges.</p></div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="section-head">
+    <span class="kicker">TES OUTILS</span>
+    <h2>Ce que tu vas manipuler pour de vrai</h2>
+  </div>
+  <div class="tools-row">
+    <div class="tool-chip">CRM / PGI réseau</div>
+    <div class="tool-chip">Outils de suivi de linéaire</div>
+    <div class="tool-chip">Tableaux de bord de ventes par point de vente</div>
+    <div class="tool-chip">Supports de formation réseau</div>
+    <div class="tool-chip">Contrats et accords de référencement</div>
+    <div class="tool-chip">Outils de reporting terrain</div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="section-head">
+    <span class="kicker">TU AS SUIVI ?</span>
+    <h2>Mini-quiz de ce terrain</h2>
+    <p>5 questions pour vérifier que tu sais qui fait quoi sur ce terrain — ça alimente ta barre de progression sur ce terrain.</p>
+  </div>
+  <div class="quiz-card">
+    <div class="quiz-progress-label"><span id="quiz-step-label">Question 1 / 5</span><span id="quiz-score-label">0 bonne réponse</span></div>
+    <div class="quiz-bar"><div class="quiz-bar-fill" id="quiz-bar-fill"></div></div>
+
+    <div id="quiz-body">
+      <div class="quiz-question" id="quiz-question"></div>
+      <div class="quiz-options" id="quiz-options"></div>
+      <div class="quiz-feedback" id="quiz-feedback"></div>
+      <button class="quiz-next" id="quiz-next">Question suivante</button>
+    </div>
+
+    <div class="quiz-result" id="quiz-result">
+      <div class="qr-score" id="qr-score">0/5</div>
+      <p id="qr-text"></p>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0; padding-bottom:80px;">
+  <div class="cta-block">
+    <div>
+      <h2>Prêt·e à voir comment ça se passe en cours ?</h2>
+      <p>Découvre les mises en situation et les premiers cas pratiques du terrain 3.</p>
+    </div>
+    <div class="pill-btn pb-primary">Voir les premiers cas pratiques <span class="pb-arrow">↗</span></div>
+  </div>
+</section>
+
+<footer>
+  <span>BTS NDRC — Bienvenue dans le métier</span>
+  <a href="index.html">← Retour à l'accueil</a>
+</footer>
+
+<!-- ---------- MODALE FICHE MÉTIER ---------- -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeJob()">✕</button>
+    <div class="modal-icon" id="modal-icon">◈</div>
+    <h3 id="modal-title"></h3>
+    <div class="modal-role" id="modal-role"></div>
+    <div class="modal-section">
+      <h4>Ta mission au quotidien</h4>
+      <ul id="modal-missions"></ul>
+    </div>
+    <div class="modal-section">
+      <h4>Compétences clés sur ce poste</h4>
+      <ul id="modal-skills"></ul>
+    </div>
+    <div class="modal-evol" id="modal-evol"></div>
+  </div>
+</div>
+
+<script>
+  // ---------- FICHES MÉTIERS ----------
+  const JOBS = {
+    chefsecteur: {
+      title: "Chef·fe de secteur",
+      role: "Développer la présence d'une marque chez les distributeurs de son secteur",
+      missions: [
+        "Visiter régulièrement les points de vente de son secteur géographique",
+        "Négocier l'implantation et la mise en avant des produits",
+        "Contrôler le respect des accords de référencement",
+        "Former les équipes en magasin aux nouveaux produits"
+      ],
+      skills: ["Autonomie et organisation de tournée", "Négociation avec des responsables de rayon", "Analyse de la performance par point de vente"],
+      evol: "<b>Évolution possible :</b> chef de secteur senior, responsable régional, chef des ventes."
+    },
+    animateurdistrib: {
+      title: "Animateur·rice réseau distributeurs",
+      role: "Faire vivre et monter en compétence un réseau de points de vente",
+      missions: [
+        "Former les vendeurs des points de vente partenaires",
+        "Organiser des animations ou opérations commerciales en magasin",
+        "Suivre les résultats de vente par point de vente",
+        "Faire remonter les besoins du réseau en interne"
+      ],
+      skills: ["Pédagogie et animation de groupe", "Sens du terrain", "Suivi rigoureux des indicateurs réseau"],
+      evol: "<b>Évolution possible :</b> responsable animation réseau, responsable régional des ventes."
+    },
+    animateurpartenaires: {
+      title: "Animateur·rice réseau de partenaires",
+      role: "Développer et faire grandir un réseau de partenaires d'affaires",
+      missions: [
+        "Sélectionner et intégrer de nouveaux partenaires",
+        "Animer la relation avec les partenaires existants",
+        "Organiser des temps forts pour dynamiser le réseau",
+        "Évaluer la performance et la rentabilité des partenariats"
+      ],
+      skills: ["Relationnel et diplomatie", "Vision stratégique du réseau", "Suivi de la performance partenaire"],
+      evol: "<b>Évolution possible :</b> responsable partenariats, directeur de réseau."
+    },
+    vdi: {
+      title: "Conseiller·ère vente à domicile",
+      role: "Vendre et conseiller en réunion, chez le client ou à distance",
+      missions: [
+        "Organiser des réunions ou ateliers de vente à domicile",
+        "Présenter et vendre une gamme de produits",
+        "Développer son propre réseau de clients",
+        "Gérer sa propre activité en autonomie"
+      ],
+      skills: ["Autonomie et sens de l'organisation", "Aisance à l'oral en petit groupe", "Fidélisation client"],
+      evol: "<b>Évolution possible :</b> responsable d'équipe de vendeurs indépendants, formatrice réseau."
+    },
+    recruteur: {
+      title: "Recruteur·se de réseau de vente directe",
+      role: "Trouver et former les futurs vendeurs indépendants d'un réseau",
+      missions: [
+        "Repérer et contacter des candidats potentiels",
+        "Présenter l'opportunité et le fonctionnement du réseau",
+        "Former les nouveaux vendeurs indépendants",
+        "Accompagner leurs premiers pas dans l'activité"
+      ],
+      skills: ["Sens du contact et de la conviction", "Pédagogie", "Suivi et accompagnement dans la durée"],
+      evol: "<b>Évolution possible :</b> responsable régional de réseau, directeur de réseau de vente directe."
+    },
+    merchandiser: {
+      title: "Merchandiser",
+      role: "Mettre en scène les produits pour donner envie d'acheter",
+      missions: [
+        "Concevoir l'implantation et la mise en avant des produits en rayon",
+        "Installer et vérifier le bon respect du merchandising en magasin",
+        "Adapter les mises en scène aux temps forts commerciaux",
+        "Analyser l'impact des opérations sur les ventes"
+      ],
+      skills: ["Sens visuel et créativité", "Rigueur d'exécution", "Analyse des ventes par emplacement"],
+      evol: "<b>Évolution possible :</b> responsable merchandising, chef de secteur."
+    }
+  };
+
+  function openJob(id){
+    const j = JOBS[id];
+    document.getElementById('modal-title').textContent = j.title;
+    document.getElementById('modal-role').textContent = j.role;
+    document.getElementById('modal-missions').innerHTML = j.missions.map(m => `<li>${m}</li>`).join('');
+    document.getElementById('modal-skills').innerHTML = j.skills.map(s => `<li>${s}</li>`).join('');
+    document.getElementById('modal-evol').innerHTML = j.evol;
+    document.getElementById('modal-overlay').classList.add('open');
+  }
+  function closeJob(){
+    document.getElementById('modal-overlay').classList.remove('open');
+  }
+  document.getElementById('modal-overlay').addEventListener('click', (e) => {
+    if(e.target.id === 'modal-overlay') closeJob();
+  });
+
+  // ---------- QUIZ DE COMPRÉHENSION ----------
+  const QUIZ = [
+    {
+      q: "Quel est le point commun entre tous les métiers de ce terrain ?",
+      options: ["Ils gèrent un client unique sur la durée", "Ils font grandir un réseau plutôt qu'un client", "Ils travaillent uniquement en ligne"],
+      correct: 1
+    },
+    {
+      q: "Qui négocie et contrôle l'implantation des produits dans les magasins de son secteur ?",
+      options: ["Le chef de secteur", "Le merchandiser", "Le recruteur de réseau"],
+      correct: 0
+    },
+    {
+      q: "Qui conçoit la mise en scène visuelle des produits en rayon ?",
+      options: ["L'animateur de réseau de partenaires", "Le merchandiser", "Le conseiller vente à domicile"],
+      correct: 1
+    },
+    {
+      q: "Qui organise des réunions à domicile pour vendre directement aux particuliers ?",
+      options: ["Le conseiller vente à domicile", "Le chef de secteur", "L'animateur réseau distributeurs"],
+      correct: 0
+    },
+    {
+      q: "Qui repère et forme les nouveaux vendeurs indépendants d'un réseau ?",
+      options: ["Le merchandiser", "Le recruteur de réseau", "Le chef de secteur"],
+      correct: 1
+    }
+  ];
+
+  let current = 0, score = 0;
+
+  function renderQuiz(){
+    const item = QUIZ[current];
+    document.getElementById('quiz-step-label').textContent = `Question ${current+1} / ${QUIZ.length}`;
+    document.getElementById('quiz-score-label').textContent = `${score} bonne${score>1?'s':''} réponse${score>1?'s':''}`;
+    document.getElementById('quiz-bar-fill').style.width = `${(current/QUIZ.length)*100}%`;
+    document.getElementById('quiz-question').textContent = item.q;
+    document.getElementById('quiz-feedback').textContent = '';
+    document.getElementById('quiz-next').style.display = 'none';
+    const opts = document.getElementById('quiz-options');
+    opts.innerHTML = '';
+    item.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-option';
+      btn.textContent = opt;
+      btn.onclick = () => selectAnswer(i);
+      opts.appendChild(btn);
+    });
+  }
+
+  function selectAnswer(i){
+    const item = QUIZ[current];
+    const buttons = document.querySelectorAll('.quiz-option');
+    buttons.forEach(b => b.disabled = true);
+    if(i === item.correct){
+      buttons[i].classList.add('correct');
+      document.getElementById('quiz-feedback').textContent = "Exact !";
+      score++;
+    } else {
+      buttons[i].classList.add('wrong');
+      buttons[item.correct].classList.add('correct');
+      document.getElementById('quiz-feedback').textContent = "Pas tout à fait — la bonne réponse est surlignée.";
+    }
+    document.getElementById('quiz-score-label').textContent = `${score} bonne${score>1?'s':''} réponse${score>1?'s':''}`;
+    document.getElementById('quiz-next').style.display = 'inline-block';
+  }
+
+  document.getElementById('quiz-next').addEventListener('click', () => {
+    current++;
+    if(current < QUIZ.length){
+      renderQuiz();
+    } else {
+      document.getElementById('quiz-bar-fill').style.width = '100%';
+      document.getElementById('quiz-body').style.display = 'none';
+      document.getElementById('quiz-result').style.display = 'block';
+      document.getElementById('qr-score').textContent = `${score}/${QUIZ.length}`;
+      const msg = score === QUIZ.length
+        ? "Ce terrain est acquis. Tu peux passer aux cas pratiques."
+        : score >= 3
+        ? "Bonne base sur ce terrain — quelques points à revoir avec ton formateur."
+        : "On reprend ce terrain ensemble avant de passer aux cas pratiques.";
+      document.getElementById('qr-text').textContent = msg;
+    }
+  });
+
+  renderQuiz();
+
+  // ---------- QUIZ D'ORIENTATION ----------
+  const ORIENT = [
+    {
+      q: "Dans un groupe, tu es plutôt celui ou celle qui...",
+      options: [
+        { text: "Organise et structure pour que ça avance", job: "chefsecteur" },
+        { text: "Motive et forme les autres", job: "animateurdistrib" },
+        { text: "Tisse des liens avec des gens extérieurs au groupe", job: "animateurpartenaires" }
+      ]
+    },
+    {
+      q: "Ce qui te plairait le plus...",
+      options: [
+        { text: "Avoir ta propre petite activité, en autonomie", job: "vdi" },
+        { text: "Convaincre quelqu'un de rejoindre un projet", job: "recruteur" },
+        { text: "Rendre un espace visuellement plus vendeur", job: "merchandiser" }
+      ]
+    },
+    {
+      q: "Ton style naturel...",
+      options: [
+        { text: "Négociateur, tu discutes bien les conditions", job: "chefsecteur" },
+        { text: "Formateur, tu aimes transmettre", job: "animateurdistrib" },
+        { text: "Créatif, tu as le sens de la mise en scène", job: "merchandiser" }
+      ]
+    },
+    {
+      q: "Ce qui te motive le plus...",
+      options: [
+        { text: "Voir un réseau grandir grâce à toi", job: "animateurpartenaires" },
+        { text: "Être ton propre patron", job: "vdi" },
+        { text: "Repérer et faire éclore de nouveaux talents", job: "recruteur" }
+      ]
+    },
+    {
+      q: "Le talent qu'on te reconnaît...",
+      options: [
+        { text: "Tu es rigoureux·se et fiable sur le terrain", job: "chefsecteur" },
+        { text: "Tu as un bon sens visuel et du détail", job: "merchandiser" },
+        { text: "Tu sais donner confiance aux gens que tu recrutes", job: "recruteur" }
+      ]
+    }
+  ];
+
+  const RESULT_TEXT = {
+    chefsecteur: "Tu es rigoureux·se et tu aimes négocier sur le terrain. Chef·fe de secteur pourrait bien te correspondre.",
+    animateurdistrib: "Tu aimes former et transmettre. Animer un réseau de distributeurs, ça te ressemble.",
+    animateurpartenaires: "Tu sais tisser des liens et faire grandir un réseau. L'animation de partenaires pourrait bien t'aller.",
+    vdi: "Tu aimes l'autonomie et être ton propre patron. La vente à domicile pourrait te plaire.",
+    recruteur: "Tu sais donner confiance et repérer du potentiel. Le recrutement de réseau, c'est fait pour toi.",
+    merchandiser: "Tu as le sens du visuel et du détail. Le merchandising pourrait bien être ton truc."
+  };
+
+  let currentOr = 0;
+  const tally = {};
+
+  function renderOrient(){
+    const item = ORIENT[currentOr];
+    document.getElementById('orient-step-label').textContent = `Question ${currentOr+1} / ${ORIENT.length}`;
+    document.getElementById('orient-bar-fill').style.width = `${(currentOr/ORIENT.length)*100}%`;
+    document.getElementById('orient-question').textContent = item.q;
+    const opts = document.getElementById('orient-options');
+    opts.innerHTML = '';
+    item.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'orient-option';
+      btn.textContent = opt.text;
+      btn.onclick = () => selectOrient(opt.job);
+      opts.appendChild(btn);
+    });
+  }
+
+  function selectOrient(job){
+    tally[job] = (tally[job] || 0) + 1;
+    currentOr++;
+    if(currentOr < ORIENT.length){
+      renderOrient();
+    } else {
+      document.getElementById('orient-bar-fill').style.width = '100%';
+      let best = null, bestScore = -1;
+      Object.keys(tally).forEach(j => { if(tally[j] > bestScore){ best = j; bestScore = tally[j]; } });
+      const j = JOBS[best];
+      document.getElementById('or-title').textContent = j.title;
+      document.getElementById('or-text').textContent = RESULT_TEXT[best];
+      document.getElementById('or-see-btn').onclick = () => openJob(best);
+      document.getElementById('orient-body').style.display = 'none';
+      document.getElementById('orient-result').style.display = 'block';
+    }
+  }
+
+  function restartOrient(){
+    currentOr = 0;
+    Object.keys(tally).forEach(k => delete tally[k]);
+    document.getElementById('orient-result').style.display = 'none';
+    document.getElementById('orient-body').style.display = 'block';
+    renderOrient();
+  }
+
+  renderOrient();
+
+  // Ouvre directement une fiche métier si on arrive via #id (ex: depuis le test de personnalité)
+  if (location.hash) {
+    const jid = location.hash.slice(1);
+    if (JOBS[jid]) openJob(jid);
+  }
+</script>
+
+</body>
+</html>

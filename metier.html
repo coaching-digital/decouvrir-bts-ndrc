@@ -145,6 +145,29 @@
     backdrop-filter:blur(10px);
     border-bottom:1px solid rgba(13,31,60,0.08);
   }
+  .nav-toggle{
+    display:none; flex-direction:column; justify-content:center; gap:5px;
+    width:40px; height:40px; border-radius:10px; border:1.5px solid rgba(13,31,60,0.12);
+    background:var(--white); cursor:pointer; padding:0; flex-shrink:0;
+  }
+  .nav-toggle span{width:18px; height:2px; background:var(--navy-dark); margin:0 auto; border-radius:2px; transition:transform .2s ease, opacity .2s ease;}
+  .nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+  .nav-toggle.open span:nth-child(2){opacity:0;}
+  .nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+  .mobile-nav{
+    display:none; position:fixed; top:0; right:0; bottom:0; width:78%; max-width:320px;
+    background:var(--cream); z-index:50; box-shadow:-10px 0 40px rgba(13,31,60,0.25);
+    padding:90px 28px 28px; flex-direction:column; gap:2px;
+    transform:translateX(100%); transition:transform .25s ease;
+  }
+  .mobile-nav.open{display:flex; transform:translateX(0);}
+  .mobile-nav a, .mobile-nav span{
+    display:block; padding:16px 6px; font-size:17px; font-weight:700; color:var(--navy-dark);
+    text-decoration:none; border-bottom:1px solid rgba(13,31,60,0.08);
+  }
+  .mobile-nav a.active, .mobile-nav span.active{color:var(--rose);}
+  .nav-scrim{display:none; position:fixed; inset:0; background:rgba(13,31,60,0.4); z-index:40;}
+  .nav-scrim.open{display:block;}
   .logo{
     font-family:'Sora', sans-serif; font-weight:800; font-size:19px;
     display:flex; align-items:center; gap:10px;
@@ -421,8 +444,11 @@
   @media (max-width: 1100px){
     nav{padding:16px 20px; flex-wrap:wrap; row-gap:10px;}
     .nav-links{display:none;}
+    .nav-toggle{display:flex;}
     .ia-grid{grid-template-columns:1fr;}
-    .bubble.big{font-size:14.5px; padding:14px 22px;}
+    .bubble-field{flex-direction:column; align-items:stretch;}
+    .bubble{justify-content:flex-start; width:100%; padding:16px 20px;}
+    .bubble.big{font-size:15px; padding:16px 20px;}
     .hero{grid-template-columns:1fr; padding:44px 22px 40px; gap:32px;}
     .hero h1{font-size:38px; line-height:1.1;}
     .hero h1 .script{font-size:1.44em !important;}
@@ -453,7 +479,17 @@
     <a href="les-3-terrains.html" style="text-decoration:none; color:inherit;"><span>Tes 3 terrains d'apprentissage</span></a>
     <span>Ressources</span>
   </div>
+  <button class="nav-toggle" id="nav-toggle" onclick="toggleNav()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+<div class="nav-scrim" id="nav-scrim" onclick="toggleNav()"></div>
+<div class="mobile-nav" id="mobile-nav">
+  <a href="index.html">Accueil</a>
+  <span class="active">Le métier</span>
+  <a href="les-3-terrains.html">Tes 3 terrains d'apprentissage</a>
+  <span>Ressources</span>
+</div>
 
 <section class="terrain-hero">
   <div class="th-inner">
@@ -708,6 +744,12 @@
   if (location.hash) {
     const jid = location.hash.slice(1);
     if (JOBS[jid]) openJob(jid);
+  }
+
+  function toggleNav(){
+    document.getElementById('mobile-nav').classList.toggle('open');
+    document.getElementById('nav-scrim').classList.toggle('open');
+    document.getElementById('nav-toggle').classList.toggle('open');
   }
 </script>
 

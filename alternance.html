@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Trouver une alternance — BTS NDRC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Manrope:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-dark:#3F22EC;
+    --navy:#2E18B8;
+    --rose:#FA58A7;
+    --rose-bright:#FF7EC2;
+    --orange:#EFCA62;
+    --violet:#03E29D;
+    --violet-bright:#4DFFC0;
+    --violet-deep:#0A8F62;
+    --yellow:#DFF700;
+    --cream:#FFFFFF;
+    --cream-soft:#F1EEF7;
+    --grey:#5B6472;
+    --white:#FFFFFF;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Manrope', sans-serif;
+    background:var(--cream);
+    color:var(--navy-dark);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{font-family:'Sora', sans-serif;}
+  a{text-decoration:none; color:inherit;}
+  .script{font-family:'Caveat', cursive; font-weight:700;}
+
+  .doodle{position:absolute; opacity:0.9; pointer-events:none;}
+  .doodle-spin{animation:spin 18s linear infinite;}
+  @keyframes spin{from{transform:rotate(0deg);} to{transform:rotate(360deg);}}
+
+  /* pill buttons w/ circular icon, à la Hanuman/Nexora */
+  .pill-btn{
+    display:inline-flex; align-items:center; gap:10px;
+    font-weight:700; font-size:14.5px; border-radius:99px; border:none; cursor:pointer;
+    text-decoration:none;
+  }
+  .pill-btn .pb-arrow{
+    width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:13px; flex-shrink:0;
+  }
+  .pill-btn.pb-primary{background:var(--rose); color:white; padding:6px 6px 6px 22px;}
+  .pill-btn.pb-primary .pb-arrow{background:white; color:var(--rose);}
+  .pill-btn.pb-dark{background:var(--navy-dark); color:white; padding:6px 6px 6px 22px;}
+  .pill-btn.pb-dark .pb-arrow{background:var(--yellow); color:var(--navy-dark);}
+  .pill-btn.pb-outline{background:transparent; color:white; border:1.5px solid rgba(255,255,255,0.4); padding:6px 6px 6px 22px;}
+  .pill-btn.pb-outline .pb-arrow{background:rgba(255,255,255,0.15); color:white;}
+  .pill-btn.pb-outline-dark{background:transparent; color:var(--navy-dark); border:1.5px solid rgba(13,31,60,0.2); padding:6px 6px 6px 22px;}
+  .pill-btn.pb-outline-dark .pb-arrow{background:var(--cream-soft); color:var(--navy-dark);}
+
+  /* ---------- NAV ---------- */
+  nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px 64px;
+    position:sticky; top:0; z-index:20;
+    background:rgba(251,245,239,0.88);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(13,31,60,0.08);
+  }
+  .nav-toggle{
+    display:none; flex-direction:column; justify-content:center; gap:5px;
+    width:40px; height:40px; border-radius:10px; border:1.5px solid rgba(13,31,60,0.12);
+    background:var(--white); cursor:pointer; padding:0; flex-shrink:0;
+  }
+  .nav-toggle span{width:18px; height:2px; background:var(--navy-dark); margin:0 auto; border-radius:2px; transition:transform .2s ease, opacity .2s ease;}
+  .nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+  .nav-toggle.open span:nth-child(2){opacity:0;}
+  .nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+  .mobile-nav{
+    display:none; position:fixed; top:0; right:0; bottom:0; width:78%; max-width:320px;
+    background:var(--cream); z-index:50; box-shadow:-10px 0 40px rgba(13,31,60,0.25);
+    padding:90px 28px 28px; flex-direction:column; gap:2px;
+    transform:translateX(100%); transition:transform .25s ease;
+  }
+  .mobile-nav.open{display:flex; transform:translateX(0);}
+  .mobile-nav a, .mobile-nav span{
+    display:block; padding:16px 6px; font-size:17px; font-weight:700; color:var(--navy-dark);
+    text-decoration:none; border-bottom:1px solid rgba(13,31,60,0.08);
+  }
+  .mobile-nav a.active, .mobile-nav span.active{color:var(--rose);}
+  .nav-scrim{display:none; position:fixed; inset:0; background:rgba(13,31,60,0.4); z-index:40;}
+  .nav-scrim.open{display:block;}
+  .logo{
+    font-family:'Sora', sans-serif; font-weight:800; font-size:19px;
+    display:flex; align-items:center; gap:10px;
+    color:var(--navy-dark);
+  }
+  .logo-mark{
+    width:30px; height:30px; border-radius:9px;
+    background:linear-gradient(135deg, var(--rose) 0%, var(--violet) 100%);
+    display:flex; align-items:center; justify-content:center;
+    color:white; font-weight:800; font-size:13px;
+  }
+  .nav-links{display:flex; gap:38px; font-size:14.5px; font-weight:600; color:var(--navy-dark);}
+  .nav-links span{opacity:0.62; cursor:pointer;}
+  .nav-links span.active{opacity:1;}
+  .nav-cta{
+    background:var(--navy-dark); color:var(--cream);
+    padding:11px 22px; border-radius:99px; font-size:13.5px; font-weight:700;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding:86px 64px 76px;
+    display:grid; grid-template-columns:1.15fr 0.85fr; gap:50px; align-items:center;
+    background:var(--navy-dark);
+    position:relative; overflow:hidden;
+  }
+  .hero::before{
+    content:''; position:absolute; top:-140px; right:-100px; width:420px; height:420px;
+    background:var(--rose-bright); opacity:0.32; border-radius:50%; filter:blur(30px);
+  }
+  .hero::after{
+    content:''; position:absolute; bottom:-160px; left:-120px; width:360px; height:360px;
+    background:var(--orange); opacity:0.18; border-radius:50%; filter:blur(30px);
+  }
+  .hero > div:not(.doodle), .hero-visual{position:relative;}
+  .eyebrow-pill{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--white); border:1px solid rgba(13,31,60,0.1);
+    padding:7px 14px 7px 8px; border-radius:99px; font-size:12.5px; font-weight:700;
+    color:var(--navy-dark); margin-bottom:26px;
+  }
+  .eyebrow-dot{width:8px; height:8px; border-radius:50%; background:var(--rose);}
+  .hero h1{
+    font-size:54px; line-height:1.05; font-weight:800; letter-spacing:-0.5px;
+    color:var(--white);
+  }
+  .hero h1 em{font-style:normal; color:var(--orange);}
+  .hero p{
+    margin-top:22px; font-size:17px; line-height:1.6; color:#C9D2E0; max-width:440px;
+  }
+  .hero-actions{display:flex; gap:14px; margin-top:34px;}
+  .hero-stats{display:flex; gap:34px; margin-top:44px;}
+  .hero-stat b{color:white; font-family:'Sora',sans-serif; font-size:24px; display:block;}
+  .hero-stat span{color:#8FA0BC; font-size:12.5px; font-weight:600;}
+  .btn-primary{
+    background:var(--rose); color:white; font-weight:700; font-size:15px;
+    padding:15px 26px; border-radius:12px; border:none; cursor:pointer;
+  }
+  .btn-secondary{
+    background:transparent; color:white; font-weight:700; font-size:15px;
+    padding:15px 22px; border-radius:12px; border:1.5px solid rgba(255,255,255,0.35); cursor:pointer;
+  }
+
+  .hero-visual{
+    background:var(--white); border-radius:26px; padding:32px;
+    position:relative; overflow:hidden; box-shadow:0 30px 60px rgba(0,0,0,0.25);
+  }
+  .hero-visual::before{
+    content:''; position:absolute; top:-60px; right:-60px; width:200px; height:200px;
+    background:#FCE4EA; opacity:0.9; border-radius:50%; filter:blur(10px);
+  }
+  .hv-label{color:var(--rose); font-size:12px; font-weight:700; letter-spacing:.02em; position:relative;}
+  .hv-title{color:var(--navy-dark); font-family:'Sora',sans-serif; font-weight:700; font-size:19px; margin-top:6px; position:relative;}
+  .hv-list{margin-top:22px; display:flex; flex-direction:column; gap:16px; position:relative;}
+  .hv-item{display:flex; gap:12px; align-items:flex-start;}
+  .hv-time{font-size:12px; font-weight:700; color:var(--orange); width:52px; flex-shrink:0; padding-top:2px;}
+  .hv-dot{width:9px; height:9px; border-radius:50%; background:var(--rose); margin-top:5px; flex-shrink:0;}
+  .hv-text{color:var(--grey); font-size:13.5px; line-height:1.45;}
+  .hv-text b{color:var(--navy-dark);}
+
+  /* ---------- TERRAINS SECTION ---------- */
+  .section{padding:30px 64px 90px;}
+  .section-head{max-width:560px; margin-bottom:44px;}
+  .section-head .kicker{color:var(--rose); font-weight:700; font-size:13.5px; margin-bottom:10px; display:block;}
+  .section-head h2{font-size:32px; font-weight:800; letter-spacing:-0.3px;}
+
+  .terrains{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  .terrain-card{
+    border-radius:24px; padding:32px 26px 26px;
+    position:relative; overflow:hidden;
+    display:block; min-height:280px;
+  }
+  .terrain-card.c1{background:var(--navy-dark);}
+  .terrain-card.c2{background:var(--rose);}
+  .terrain-card.c3{background:var(--yellow);}  .terrain-card::after{
+    content:''; position:absolute; left:0; right:0; bottom:0; height:12px;
+    background:repeating-linear-gradient(-45deg, rgba(255,255,255,0.3) 0 7px, transparent 7px 14px);
+  }
+  .terrain-card.c3::after{background:repeating-linear-gradient(-45deg, rgba(13,31,60,0.14) 0 7px, transparent 7px 14px);}
+  .terrain-card.clickable{cursor:pointer; transition:transform .15s ease, box-shadow .15s ease;}
+  .terrain-card.clickable:hover{transform:translateY(-4px) rotate(-0.4deg); box-shadow:0 18px 34px rgba(13,31,60,0.22);}
+  .terrain-card.disabled{opacity:0.62;}
+  .terrain-card .tc-icon{
+    width:46px; height:46px; border-radius:13px;
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom:22px; color:var(--navy-dark); font-size:19px;
+    background:rgba(255,255,255,0.92);
+  }
+  .terrain-card.c1 .tc-icon{color:var(--violet-deep);}
+  .terrain-card h3{font-size:20px; font-weight:800; margin-bottom:10px; color:white; font-family:'Sora',sans-serif;}
+  .terrain-card p{font-size:14px; line-height:1.55; color:rgba(255,255,255,0.82);}
+  .terrain-card.c3 h3, .terrain-card.c3 p, .terrain-card.c3 .tc-progress-label, .terrain-card.c3 .tc-cta{color:var(--navy-dark);}
+  .terrain-card.c3 p{opacity:0.78;}
+  .tc-tag{display:inline-block; margin-top:0; margin-bottom:14px; font-size:11.5px; font-weight:800; padding:5px 12px; border-radius:99px; background:rgba(255,255,255,0.85); color:var(--rose);}
+  .tc-progress{margin-top:22px; height:6px; border-radius:99px; background:rgba(255,255,255,0.22); overflow:hidden;}
+  .tc-progress-fill{height:100%; border-radius:99px; background:white;}
+  .terrain-card.c1 .tc-progress-fill{width:38%;}
+  .terrain-card.c2 .tc-progress-fill{width:71%;}
+  .terrain-card.c3 .tc-progress-fill{width:12%; background:var(--navy-dark);}
+  .tc-progress-label{display:flex; justify-content:space-between; font-size:11.5px; color:rgba(255,255,255,0.75); margin-top:8px; font-weight:600;}
+  .tc-cta{margin-top:20px; font-size:13px; font-weight:800; color:white; display:inline-flex; align-items:center; gap:6px;}
+
+
+  /* ---------- JOBS STRIP ---------- */
+  .jobs-strip{
+    background:var(--navy-dark); border-radius:28px; padding:48px 54px;
+    display:grid; grid-template-columns:0.8fr 1.2fr; gap:40px; align-items:center;
+  }
+  .jobs-strip h2{color:white; font-size:27px; font-weight:800; line-height:1.2;}
+  .jobs-strip p{color:#AEB9CC; margin-top:14px; font-size:14.5px; line-height:1.6;}
+  .job-chips{display:flex; flex-wrap:wrap; gap:10px;}
+  .job-chip{
+    background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
+    color:#EDF1F7; padding:11px 17px; border-radius:12px; font-size:13.5px; font-weight:600;
+  }
+
+  /* ---------- TEST DE PERSONNALITÉ ---------- */
+  .quiz-banner{
+    background:linear-gradient(135deg, var(--rose) 0%, var(--violet) 100%);
+    border-radius:28px; padding:2px; margin-bottom:26px;
+  }
+  .quiz-banner-inner{
+    background:var(--cream); border-radius:26px; padding:44px 48px;
+  }
+  .qb-kicker{display:flex; align-items:center; gap:8px; margin-bottom:14px;}
+  .qb-kicker span{font-weight:800; font-size:13px; letter-spacing:.02em;
+    background:linear-gradient(135deg, var(--rose) 0%, var(--violet) 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .quiz-banner-inner h2{font-size:26px; font-weight:800; max-width:520px;}
+  .quiz-banner-inner > p{color:var(--grey); margin-top:10px; font-size:14.5px; max-width:520px; line-height:1.6;}
+
+  .pt-card{background:var(--white); border-radius:22px; padding:40px; border:1px solid rgba(13,31,60,0.06); margin-top:30px;}
+  .pt-bar{height:6px; border-radius:99px; background:var(--cream-soft); overflow:hidden; margin-bottom:30px;}
+  .pt-bar-fill{height:100%; background:linear-gradient(90deg, var(--rose), var(--orange)); border-radius:99px; width:0%; transition:width .3s ease;}
+  .pt-step-label{display:flex; justify-content:space-between; font-size:12.5px; font-weight:700; color:var(--grey); margin-bottom:8px;}
+  .pt-question{font-size:18px; font-weight:700; margin-bottom:20px;}
+  .pt-option{
+    text-align:left; background:var(--cream); border:1.5px solid transparent; border-radius:12px;
+    padding:15px 18px; font-size:14.5px; font-weight:600; color:var(--navy-dark); cursor:pointer;
+    width:100%; display:block; margin-bottom:10px; font-family:'Manrope',sans-serif;
+  }
+  .pt-option:hover{border-color:rgba(232,25,75,0.3); background:#FDEEE4;}
+  .pt-start-btn{
+    background:var(--navy-dark); color:white; font-weight:700; font-size:15px;
+    padding:15px 28px; border-radius:12px; border:none; cursor:pointer;
+  }
+  .pt-result{display:none;}
+  .pt-result-head{text-align:center; margin-bottom:28px;}
+  .pt-result-head .pt-label{color:var(--grey); font-size:13px; font-weight:700; margin-bottom:6px;}
+  .pt-result-head h3{font-size:23px; font-weight:800;}
+  .pt-results-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  .pt-result-card{background:var(--cream); border-radius:18px; padding:24px; border:1px solid rgba(13,31,60,0.06); position:relative;}
+  .pt-terrain-tag{display:inline-block; font-size:11px; font-weight:700; padding:4px 10px; border-radius:99px; margin-bottom:12px;}
+  .pt-result-card h4{font-size:15.5px; font-weight:700; margin-bottom:8px;}
+  .pt-result-card p{font-size:12.5px; color:var(--grey); line-height:1.5; margin-bottom:16px;}
+  .pt-result-card a{display:inline-block; font-size:12.5px; font-weight:700; color:var(--navy-dark); border-bottom:1.5px solid var(--navy-dark); padding-bottom:1px;}
+  .pt-restart{margin-top:26px; text-align:center;}
+  .pt-restart button{background:transparent; border:1.5px solid rgba(13,31,60,0.15); color:var(--navy-dark); font-weight:700; font-size:13.5px; padding:11px 20px; border-radius:12px; cursor:pointer;}
+
+  /* ---------- LE SAVAIS-TU ---------- */
+  .myth-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  .myth-card{
+    border-radius:26px; padding:32px 28px 26px; position:relative; overflow:hidden;
+    min-height:420px; display:flex; flex-direction:column;
+  }
+  .myth-card.m1{background:var(--rose);}
+  .myth-card.m2{background:var(--navy-dark);}
+  .myth-card.m3{background:var(--yellow);}
+  .myth-card::after{
+    content:''; position:absolute; left:0; right:0; bottom:0; height:14px;
+    background:repeating-linear-gradient(-45deg, rgba(255,255,255,0.35) 0 8px, transparent 8px 16px);
+  }
+  .myth-card.m3::after{background:repeating-linear-gradient(-45deg, rgba(13,31,60,0.16) 0 8px, transparent 8px 16px);}
+  .myth-badge{
+    width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.18);
+    display:flex; align-items:center; justify-content:center; font-size:15px; margin-bottom:18px;
+  }
+  .myth-card.m3 .myth-badge{background:rgba(13,31,60,0.12);}
+  .myth-tag{font-size:11.5px; font-weight:800; letter-spacing:.04em; margin-bottom:14px; opacity:0.85;}
+  .myth-claim{font-size:13.5px; font-weight:700; font-style:italic; line-height:1.4; margin-bottom:18px; opacity:0.9;}
+  .myth-stat{font-family:'Sora',sans-serif; font-weight:800; font-size:44px; line-height:1; margin-bottom:10px; letter-spacing:-1px;}
+  .myth-reality{font-size:13px; line-height:1.6; margin-bottom:auto; padding-bottom:16px;}
+  .myth-reality b{font-weight:800;}
+  .myth-source{font-size:10.5px; font-weight:700; opacity:0.65; padding-top:14px; position:relative; z-index:1;}
+  .myth-card.m1 .myth-tag, .myth-card.m1 .myth-claim, .myth-card.m1 .myth-stat, .myth-card.m1 .myth-reality, .myth-card.m1 .myth-source{color:white;}
+  .myth-card.m2 .myth-tag, .myth-card.m2 .myth-claim, .myth-card.m2 .myth-reality, .myth-card.m2 .myth-source{color:#DCE3EE;}
+  .myth-card.m2 .myth-stat{color:var(--violet-bright);}
+  .myth-card.m3 .myth-tag, .myth-card.m3 .myth-claim, .myth-card.m3 .myth-stat, .myth-card.m3 .myth-reality, .myth-card.m3 .myth-source{color:var(--navy-dark);}
+  .myth-card{cursor:pointer; transition:transform .15s ease, box-shadow .15s ease;}
+  .myth-card:hover{transform:translateY(-4px); box-shadow:0 16px 32px rgba(13,31,60,0.18);}
+  .myth-hidden{display:none;}
+  .myth-card.revealed .myth-hidden{display:block; animation:mythIn .3s ease;}
+  .myth-card.revealed .myth-reveal-prompt{display:none;}
+  .myth-reveal-prompt{
+    margin-top:6px; font-size:12.5px; font-weight:800; letter-spacing:.02em;
+    position:relative; z-index:1; opacity:0.85;
+  }
+  @keyframes mythIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+  .myth-cta-row{margin-top:26px; text-align:center;}
+
+  /* ---------- PROBLÈMES D'ENTREPRISE ---------- */
+  .pb-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  .pb-card{
+    border-radius:22px; padding:28px; position:relative; overflow:hidden;
+    display:block; min-height:200px;
+  }
+  .pb-card.pb-c1{background:var(--navy-dark);}
+  .pb-card.pb-c2{background:var(--rose);}
+  .pb-card.pb-c3{background:var(--yellow);}
+  .pb-card:hover{transform:translateY(-4px); box-shadow:0 16px 32px rgba(13,31,60,0.18);}
+  .pb-card{transition:transform .15s ease, box-shadow .15s ease;}
+  .pb-quote{font-size:15px; font-weight:700; font-style:italic; line-height:1.45; margin-bottom:16px; color:white;}
+  .pb-solve{font-size:13px; line-height:1.55; color:rgba(255,255,255,0.85);}
+  .pb-solve b{color:white;}
+  .pb-card.pb-c3 .pb-quote{color:var(--navy-dark);}
+  .pb-card.pb-c3 .pb-solve{color:rgba(13,31,60,0.75);}
+  .pb-card.pb-c3 .pb-solve b{color:var(--navy-dark);}
+
+  /* ---------- 10 PRÉJUGÉS ---------- */
+  .prej-card{background:var(--white); border-radius:22px; padding:40px; border:1px solid rgba(13,31,60,0.06);}
+  .prej-bar{height:6px; border-radius:99px; background:var(--cream-soft); overflow:hidden; margin-bottom:26px;}
+  .prej-bar-fill{height:100%; background:linear-gradient(90deg, var(--rose), var(--violet)); border-radius:99px; width:0%; transition:width .3s ease;}
+  .prej-step-label{display:flex; justify-content:space-between; font-size:12.5px; font-weight:700; color:var(--grey); margin-bottom:8px;}
+  .prej-theme-tag{display:inline-block; font-size:11px; font-weight:800; letter-spacing:.03em; padding:5px 12px; border-radius:99px; margin-bottom:18px; background:var(--cream); color:var(--rose);}
+  .prej-question{font-size:19px; font-weight:700; line-height:1.4; margin-bottom:26px;}
+  .prej-vf-row{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .prej-vf-btn{
+    padding:22px; border-radius:16px; border:2px solid var(--cream-soft); background:var(--cream);
+    font-family:'Sora',sans-serif; font-weight:800; font-size:16px; color:var(--navy-dark); cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .prej-vf-btn:hover{border-color:var(--rose);}
+  .prej-vf-btn[disabled]{cursor:default;}
+  .prej-vf-btn.correct{background:#E7F6EC; border-color:#3FAE5C; color:#1F6B34;}
+  .prej-vf-btn.wrong{background:#FCE9EA; border-color:var(--rose); color:var(--rose);}
+  .prej-feedback{margin-top:22px; padding:18px 20px; border-radius:14px; background:var(--cream); font-size:14px; line-height:1.55; display:none;}
+  .prej-feedback.show{display:block;}
+  .prej-feedback b{display:block; margin-bottom:4px; font-size:13px; letter-spacing:.02em;}
+  .prej-next{margin-top:20px; display:none;}
+  .prej-next.show{display:inline-flex;}
+  .prej-intro{text-align:center;}
+  .prej-intro-facts{display:flex; justify-content:center; gap:44px; margin-bottom:28px; flex-wrap:wrap;}
+  .prej-fact{display:flex; flex-direction:column; align-items:center;}
+  .prej-fact b{font-family:'Sora',sans-serif; font-size:30px; font-weight:800; color:var(--rose);}
+  .prej-fact span{font-size:12.5px; font-weight:600; color:var(--grey); margin-top:2px;}
+  .prej-intro-text{max-width:440px; margin:0 auto 28px; color:var(--grey); font-size:14px; line-height:1.6;}
+  .prej-result{display:none; text-align:center;}
+  .prej-result .pr-score{font-family:'Sora',sans-serif; font-size:48px; font-weight:800; color:var(--rose);}
+  .prej-result p{color:var(--grey); font-size:14.5px; margin:14px auto 22px; max-width:440px; line-height:1.55;}
+  .prej-result-actions{display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
+
+  footer{padding:36px 64px; display:flex; justify-content:space-between; align-items:center; color:var(--grey); font-size:13px;}
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 1100px){
+    nav{padding:14px 20px; flex-wrap:nowrap;}
+    .nav-links{display:none;}
+    .nav-toggle{display:flex;}
+    .hero{grid-template-columns:1fr; padding:44px 22px 40px; gap:32px;}
+    .hero h1{font-size:38px; line-height:1.1;}
+    .hero h1 .script{font-size:1.44em !important;}
+    .hero p{max-width:100%;}
+    .hero-actions{flex-wrap:wrap;}
+    .hero-stats{flex-wrap:wrap; row-gap:16px;}
+    .hero-visual{padding:24px;}
+    .section{padding:30px 20px 60px;}
+    .section-head h2{font-size:24px;}
+    .section-head h2 .script{font-size:1.44em !important;}
+    .terrains{grid-template-columns:1fr;}
+    .myth-grid{grid-template-columns:1fr;}
+    .pb-grid{grid-template-columns:1fr;}
+    .jobs-strip{grid-template-columns:1fr; padding:32px 24px;}
+    .quiz-banner-inner{padding:28px 22px;}
+    .pt-card{padding:22px;}
+    .pt-results-grid{grid-template-columns:1fr;}
+    footer{padding:24px 20px; flex-direction:column; gap:8px; text-align:center;}
+  }
+  .terrain-hero{
+    padding:56px 64px 60px;
+    background:var(--navy-dark);
+    position:relative; overflow:hidden;
+  }
+  .terrain-hero::before{
+    content:''; position:absolute; top:-120px; right:-80px; width:340px; height:340px;
+    background:var(--rose-bright); opacity:0.3; border-radius:50%; filter:blur(20px);
+  }
+  .th-inner{position:relative; max-width:720px;}
+  .th-kicker{display:flex; align-items:center; gap:10px; margin-bottom:20px;}
+  .th-kicker .num{
+    width:30px; height:30px; border-radius:9px; background:var(--rose);
+    display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:13px;
+  }
+  .th-kicker span{color:#AEB9CC; font-weight:700; font-size:13px;}
+  .terrain-hero h1{color:white; font-size:42px; font-weight:800; line-height:1.14; letter-spacing:-0.3px;}
+  .terrain-hero p{color:#C9D2E0; margin-top:18px; font-size:16px; line-height:1.65; max-width:600px;}
+  @media (max-width:1100px){
+    .terrain-hero{padding:36px 20px 32px;}
+    .terrain-hero h1{font-size:32px;}
+  }
+
+  /* ---------- FUNNEL ---------- */
+  .funnel-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:8px;}
+  .funnel-chip{
+    display:flex; align-items:center; gap:10px; background:var(--white); border-radius:99px;
+    padding:12px 20px 12px 12px; border:1px solid rgba(13,31,60,0.08);
+  }
+  .funnel-num{width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:12px; flex-shrink:0;}
+  .funnel-chip span{font-size:13.5px; font-weight:700; color:var(--navy-dark);}
+  .funnel-arrow{color:var(--grey); font-size:16px; flex-shrink:0;}
+  @media (max-width:1100px){
+    .funnel-row{flex-direction:column; align-items:stretch;}
+    .funnel-chip{width:100%;}
+    .funnel-arrow{display:none;}
+  }
+
+  /* ---------- ETAPES ---------- */
+  .step-list{display:flex; flex-direction:column; gap:16px;}
+  .step-card{display:flex; gap:22px; background:var(--white); border-radius:22px; padding:26px 28px; border:1px solid rgba(13,31,60,0.06);}
+  .step-num{
+    width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center;
+    color:white; font-weight:800; font-size:17px; flex-shrink:0; font-family:'Sora',sans-serif;
+  }
+  .step-card h3{font-size:16.5px; font-weight:800; margin-bottom:6px;}
+  .step-card p{font-size:13.5px; line-height:1.6; color:var(--grey);}
+  .step-tips{list-style:none; margin-top:12px; display:flex; flex-direction:column; gap:7px;}
+  .step-tips li{font-size:13px; line-height:1.5; color:var(--navy-dark); padding-left:16px; position:relative;}
+  .step-tips li::before{content:''; position:absolute; left:0; top:7px; width:5px; height:5px; border-radius:50%; background:var(--rose);}
+  .step-example-btn{
+    margin-top:14px; background:var(--cream); border:1.5px dashed rgba(232,25,75,0.35); color:var(--rose);
+    font-family:'Manrope',sans-serif; font-weight:700; font-size:12.5px; padding:10px 16px; border-radius:10px;
+    cursor:pointer; display:inline-flex; align-items:center; gap:6px;
+  }
+  .step-example{display:none; margin-top:14px; background:var(--navy-dark); border-radius:14px; padding:20px 22px;}
+  .step-example.open{display:block; animation:objIn .25s ease;}
+  .step-example b{display:block; font-size:10.5px; font-weight:800; letter-spacing:.03em; color:var(--yellow); margin-bottom:8px;}
+  .step-example p{color:#DCE3EE; font-size:13px; line-height:1.6; font-style:italic;}
+  .step-example .step-example-note{margin-top:10px; color:#8FA0BC; font-size:11.5px; font-style:normal; line-height:1.5;}
+  @media (max-width:1100px){
+    .step-card{padding:20px; gap:16px;}
+    .step-num{width:38px; height:38px; font-size:15px; border-radius:12px;}
+  }
+
+  /* ---------- OBJECTIONS (cliquables) ---------- */
+  .obj-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:16px;}
+  .obj-card{
+    background:var(--white); border-radius:20px; padding:24px; border:1px solid rgba(13,31,60,0.06);
+    cursor:pointer; transition:box-shadow .15s ease;
+  }
+  .obj-card:hover{box-shadow:0 10px 24px rgba(13,31,60,0.1);}
+  .obj-claim{font-size:14.5px; font-weight:700; color:var(--navy-dark); font-style:italic;}
+  .obj-hidden{display:none; margin-top:14px; padding-top:14px; border-top:1px dashed rgba(13,31,60,0.15);}
+  .obj-card.revealed .obj-hidden{display:block; animation:objIn .25s ease;}
+  .obj-phrase{margin-top:12px; background:var(--cream); border-radius:12px; padding:12px 14px;}
+  .obj-phrase b{display:block; font-size:10.5px; font-weight:800; letter-spacing:.03em; color:var(--rose); margin-bottom:4px;}
+  .obj-phrase span{font-size:12.5px; font-style:italic; color:var(--navy-dark); line-height:1.5;}
+  .obj-card.revealed .obj-prompt{display:none;}
+  .obj-prompt{margin-top:12px; font-size:12px; font-weight:800; color:var(--rose); letter-spacing:.02em;}
+  .obj-hidden p{font-size:13px; line-height:1.55; color:var(--grey);}
+  @keyframes objIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+  @media (max-width:1100px){
+    .obj-grid{grid-template-columns:1fr;}
+  }
+
+  /* ---------- CANAUX ---------- */
+  .channel-row{display:flex; flex-wrap:wrap; gap:10px;}
+  .channel-chip{background:var(--white); border:1px solid rgba(13,31,60,0.1); padding:12px 18px; border-radius:12px; font-size:13.5px; font-weight:700; color:var(--navy-dark);}
+</style>
+<body>
+
+<nav>
+  <a href="index.html" class="logo"><div class="logo-mark">N</div>Ton BTS, en vrai</a>
+  <div class="nav-links">
+    <a href="index.html" style="text-decoration:none; color:inherit;"><span>Accueil</span></a>
+    <a href="metier.html" style="text-decoration:none; color:inherit;"><span>Le métier</span></a>
+    <a href="les-3-terrains.html" style="text-decoration:none; color:inherit;"><span>Tes 3 terrains d'apprentissage</span></a>
+    <span class="active">Ressources</span>
+  </div>
+  <button class="nav-toggle" id="nav-toggle" onclick="toggleNav()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="nav-scrim" id="nav-scrim" onclick="toggleNav()"></div>
+<div class="mobile-nav" id="mobile-nav">
+  <a href="index.html">Accueil</a>
+  <a href="metier.html">Le métier</a>
+  <a href="les-3-terrains.html">Tes 3 terrains d'apprentissage</a>
+  <span class="active">Ressources</span>
+</div>
+
+<section class="terrain-hero">
+  <div class="th-inner">
+    <div class="th-kicker"><div class="num">✦</div><span>RESSOURCES</span></div>
+    <h1>Trouver ton alternance,<br><span class="script" style="color:var(--yellow); font-size:1.4em;">ta première vraie vente</span></h1>
+    <p>Chercher une entreprise, c'est exactement ce que tu vas apprendre à faire en BTS NDRC — cibler, prospecter, argumenter, closer. Alors autant commencer maintenant, avec les bons réflexes.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <span class="kicker">CHANGE DE PERSPECTIVE</span>
+    <h2>Te vendre, c'est déjà du <span class="script" style="color:var(--rose); font-size:1.5em;">commerce</span></h2>
+    <p>Le recruteur est ton prospect. Ton profil est ton offre. Le processus de recherche suit exactement la même logique qu'une vente :</p>
+  </div>
+
+  <div class="funnel-row">
+    <div class="funnel-chip"><div class="funnel-num" style="background:var(--navy-dark);">1</div><span>Cibler</span></div>
+    <div class="funnel-arrow">→</div>
+    <div class="funnel-chip"><div class="funnel-num" style="background:var(--rose);">2</div><span>Prospecter</span></div>
+    <div class="funnel-arrow">→</div>
+    <div class="funnel-chip"><div class="funnel-num" style="background:var(--orange);">3</div><span>Pitcher</span></div>
+    <div class="funnel-arrow">→</div>
+    <div class="funnel-chip"><div class="funnel-num" style="background:var(--violet-deep);">4</div><span>Convaincre</span></div>
+    <div class="funnel-arrow">→</div>
+    <div class="funnel-chip"><div class="funnel-num" style="background:#7A8600;">5</div><span>Signer</span></div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="section-head">
+    <span class="kicker">LA MÉTHODE</span>
+    <h2>Le plan en <span class="script" style="color:var(--violet-deep); font-size:1.5em;">6 étapes</span></h2>
+    <p>Chaque étape de ta recherche a son équivalent direct dans ce que tu apprends en cours.</p>
+  </div>
+
+  <div class="step-list">
+    <div class="step-card">
+      <div class="step-num" style="background:var(--navy-dark);">1</div>
+      <div>
+        <h3>Cible tes prospects (les entreprises)</h3>
+        <p>Comme pour prospecter un client : repère les entreprises qui recrutent en alternance dans ton secteur visé, regarde leur actualité, comprends leurs besoins avant de les contacter.</p>
+        <ul class="step-tips">
+          <li>Repère 15 à 20 entreprises, pas juste 3 — une recherche efficace multiplie les pistes</li>
+          <li>Regarde leur actualité récente (ouverture, nouveau produit, recrutement) pour avoir un vrai angle d'approche</li>
+          <li>Priorise celles où tu as un contact, même indirect (réseau, ancien stage, relation d'un proche)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num" style="background:var(--rose);">2</div>
+      <div>
+        <h3>Construis ton offre (CV + lettre)</h3>
+        <p>Ton CV, c'est ta plaquette commerciale : mets en avant ce que tu peux apporter, pas juste ce que tu as fait. Verbes d'action, résultats concrets si tu en as.</p>
+        <ul class="step-tips">
+          <li>Une page maximum, aérée — un recruteur y passe 30 secondes en moyenne</li>
+          <li>Des verbes d'action forts (« j'ai géré », « j'ai négocié », « j'ai développé ») plutôt que « chargé de »</li>
+          <li>Mets en avant tes mises en situation vécues en formation (négociation, prospection, projet digital) — c'est du concret, pas de la théorie</li>
+          <li>Adapte ton CV et ta lettre à chaque entreprise : cite son nom, son secteur — jamais un envoi générique en masse</li>
+          <li>Lettre de motivation : 3 paragraphes maximum (pourquoi cette entreprise, ce que tu apportes, comment te contacter)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num" style="background:var(--orange);">3</div>
+      <div>
+        <h3>Prépare ton pitch de 30 secondes</h3>
+        <p>Comme un argumentaire de vente : qui tu es, ce que tu recherches, pourquoi eux, ce que tu peux leur apporter. À réciter sans avoir l'air récité.</p>
+        <ul class="step-tips">
+          <li>Structure-le en 4 temps : qui tu es → ce que tu cherches → pourquoi cette entreprise → ce que tu apportes</li>
+          <li>Entraîne-toi à voix haute et chronomètre-toi — 30 secondes, pas 2 minutes</li>
+          <li>Évite le jargon scolaire : « je me forme au commerce et à la relation client digitale » plutôt que « je suis en BTS NDRC »</li>
+          <li>Termine toujours par une question ou une proposition concrète : « Est-ce qu'on peut en discuter 10 minutes ? »</li>
+        </ul>
+        <button class="step-example-btn" onclick="toggleExample('pitch-example')">Voir un exemple de pitch ✦</button>
+        <div class="step-example" id="pitch-example">
+          <b>TRAME À ADAPTER — PAS À RÉCITER MOT POUR MOT</b>
+          <p>« Bonjour, je m'appelle [Prénom], je me forme actuellement au commerce et à la relation client digitale en BTS NDRC, en alternance. Je recherche une entreprise pour la rentrée de septembre, idéalement dans [secteur]. J'ai suivi votre actualité et j'aime particulièrement [un produit, une valeur, un projet de l'entreprise]. Pendant ma formation, j'ai déjà mené de vraies négociations et de la prospection en situation réelle, et je suis quelqu'un de rigoureux et à l'aise à l'oral. Est-ce qu'on pourrait en discuter 10 minutes cette semaine ? »</p>
+          <div class="step-example-note">Remplace les crochets par tes vraies infos, et garde tes propres mots — l'idée est la structure, pas le texte exact.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num" style="background:var(--violet-deep);">4</div>
+      <div>
+        <h3>Décroche le rendez-vous</h3>
+        <p>Un mail de prospection, un appel, un salon : la même logique qu'une prise de contact commerciale. Sois direct, personnalisé, et propose une date précise.</p>
+        <ul class="step-tips">
+          <li>Mail court (5-6 lignes), objet clair : « Candidature alternance BTS NDRC — Ton Nom »</li>
+          <li>Propose 2 ou 3 créneaux précis plutôt qu'un vague « quand vous voulez »</li>
+          <li>Relance une fois, poliment, après 5 à 7 jours sans réponse</li>
+        </ul>
+        <button class="step-example-btn" onclick="toggleExample('email-example')">Voir un exemple d'email ✦</button>
+        <div class="step-example" id="email-example">
+          <b>TRAME À ADAPTER — PAS À ENVOYER TEL QUEL</b>
+          <p><b style="color:#DCE3EE; text-transform:none; letter-spacing:0; font-size:13px;">Objet : Candidature alternance BTS NDRC — [Prénom Nom]</b><br><br>
+          « Bonjour [Madame/Monsieur Nom — ou "l'équipe [Nom entreprise]" si tu ne connais pas de nom précis],<br><br>
+          Je me forme actuellement au commerce et à la relation client digitale en BTS NDRC, et je recherche une entreprise d'accueil en alternance pour la rentrée de septembre. [Un élément précis sur l'entreprise — un produit, une actualité, une valeur] m'a donné envie de vous contacter.<br><br>
+          Vous trouverez mon CV en pièce jointe. Seriez-vous disponible pour un échange rapide la semaine du [date] — par exemple le [jour] à [heure], ou le [jour] à [heure] ?<br><br>
+          Je reste à votre disposition pour toute information complémentaire.<br><br>
+          Cordialement,<br>[Prénom Nom]<br>[Téléphone] »</p>
+          <div class="step-example-note">Remplace les crochets par tes vraies infos. Un objet clair et 2 créneaux précis multiplient tes chances de réponse.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num" style="background:#7A8600;">5</div>
+      <div>
+        <h3>Traite les objections en entretien</h3>
+        <p>« Trop jeune », « pas d'expérience », « le poste est déjà pourvu »... chaque objection a une réponse. Prépare-les à l'avance, comme un vrai argumentaire.</p>
+        <ul class="step-tips">
+          <li>Prépare à l'avance une réponse aux objections les plus fréquentes (juste en dessous sur cette page)</li>
+          <li>Prépare aussi 2 ou 3 questions à poser au recruteur — ça montre un vrai intérêt, pas juste une candidature de plus</li>
+          <li>Reste factuel : une réponse courte et assumée vaut mieux qu'une longue justification</li>
+        </ul>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num" style="background:var(--navy-dark);">6</div>
+      <div>
+        <h3>Négocie et signe</h3>
+        <p>Rythme de l'alternance, missions, rémunération : c'est le moment de poser tes conditions, comme dans une vraie négociation commerciale.</p>
+        <ul class="step-tips">
+          <li>Renseigne-toi sur les grilles de rémunération légales de l'alternance avant l'entretien, pour savoir de quoi tu parles</li>
+          <li>Demande le rythme d'alternance précis (1 semaine sur 2, 2 jours/3 jours...) avant de signer</li>
+          <li>Ose poser des questions sur les missions concrètes du poste, pas seulement sur le salaire</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="section-head">
+    <span class="kicker">TU AS DÉJÀ LES RÉPONSES</span>
+    <h2>Les objections <span class="script" style="color:var(--rose); font-size:1.5em;">les plus fréquentes</span></h2>
+    <p>Clique sur une objection pour voir comment y répondre.</p>
+  </div>
+
+  <div class="obj-grid">
+    <div class="obj-card" onclick="revealObj(this)">
+      <div class="obj-claim">« Vous n'avez pas d'expérience. »</div>
+      <div class="obj-hidden">
+        <p>Tu as une méthode (le BTS NDRC t'entraîne déjà à prospecter et négocier), une motivation réelle et une disponibilité immédiate. Pour un premier poste en alternance, c'est souvent ça qui compte le plus — pas un CV rempli.</p>
+        <div class="obj-phrase"><b>TU PEUX DIRE</b><span>« C'est vrai, je n'ai pas encore d'expérience professionnelle — mais j'ai déjà pratiqué la prospection et la négociation en situation réelle pendant ma formation, et je suis disponible tout de suite pour apprendre vite. »</span></div>
+      </div>
+      <div class="obj-prompt">VOIR LA RÉPONSE ✦</div>
+    </div>
+    <div class="obj-card" onclick="revealObj(this)">
+      <div class="obj-claim">« Vous ne connaissez pas notre secteur. »</div>
+      <div class="obj-hidden">
+        <p>Le BTS NDRC forme des commerciaux généralistes, capables de s'adapter à n'importe quel secteur — c'est même un des points forts du diplôme. Tu peux le dire clairement, c'est écrit dans le référentiel.</p>
+        <div class="obj-phrase"><b>TU PEUX DIRE</b><span>« C'est vrai, mais le BTS NDRC forme justement des commerciaux généralistes, capables de s'adapter à n'importe quel secteur. Je vois plutôt ça comme un avantage : je n'ai pas d'habitudes à déconstruire. »</span></div>
+      </div>
+      <div class="obj-prompt">VOIR LA RÉPONSE ✦</div>
+    </div>
+    <div class="obj-card" onclick="revealObj(this)">
+      <div class="obj-claim">« On a déjà quelqu'un pour ce poste. »</div>
+      <div class="obj-hidden">
+        <p>Demande si tu peux repostuler à la prochaine session, ou propose une candidature spontanée pour une autre équipe. Beaucoup d'entreprises gardent les bons profils sous le coude.</p>
+        <div class="obj-phrase"><b>TU PEUX DIRE</b><span>« Je comprends. Est-ce que je peux vous laisser mon profil pour la prochaine session, ou y a-t-il une autre équipe chez vous qui recrute en ce moment ? »</span></div>
+      </div>
+      <div class="obj-prompt">VOIR LA RÉPONSE ✦</div>
+    </div>
+    <div class="obj-card" onclick="revealObj(this)">
+      <div class="obj-claim">« Votre candidature reste assez scolaire. »</div>
+      <div class="obj-hidden">
+        <p>Concrétise avec des exemples de mises en situation vécues en cours : une négociation menée en simulation, un contenu digital publié, une prospection réalisée. Ça devient un vrai vécu professionnel, pas juste un programme.</p>
+        <div class="obj-phrase"><b>TU PEUX DIRE</b><span>« Je comprends l'impression — mais lors d'une simulation de négociation en cours, j'ai géré un client difficile et trouvé un accord. Je peux vous en dire plus si ça vous intéresse. »</span></div>
+      </div>
+      <div class="obj-prompt">VOIR LA RÉPONSE ✦</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0; padding-bottom:80px;">
+  <div class="section-head">
+    <span class="kicker">TES CANAUX DE PROSPECTION</span>
+    <h2>Où chercher, <span class="script" style="color:var(--violet-deep); font-size:1.5em;">concrètement</span></h2>
+    <p>Comme pour n'importe quelle prospection, mieux vaut multiplier les canaux.</p>
+  </div>
+  <div class="channel-row">
+    <div class="channel-chip">La bonne alternance</div>
+    <div class="channel-chip">LinkedIn</div>
+    <div class="channel-chip">Indeed / HelloWork</div>
+    <div class="channel-chip">Ton CFA / centre de formation</div>
+    <div class="channel-chip">Salons de l'alternance</div>
+    <div class="channel-chip">Candidatures spontanées</div>
+    <div class="channel-chip">Ton réseau personnel</div>
+  </div>
+</section>
+
+<footer>
+  <span>BTS NDRC — Bienvenue dans le métier</span>
+  <a href="index.html">← Retour à l'accueil</a>
+</footer>
+
+<script>
+  function revealObj(card){
+    card.classList.add('revealed');
+  }
+
+  function toggleExample(id){
+    document.getElementById(id).classList.toggle('open');
+  }
+
+  function toggleNav(){
+    document.getElementById('mobile-nav').classList.toggle('open');
+    document.getElementById('nav-scrim').classList.toggle('open');
+    document.getElementById('nav-toggle').classList.toggle('open');
+  }
+</script>
+
+</body>
+</html>

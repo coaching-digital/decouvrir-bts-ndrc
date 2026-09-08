@@ -342,14 +342,14 @@
     .nav-links{display:none;}
     .hero{grid-template-columns:1fr; padding:44px 22px 40px; gap:32px;}
     .hero h1{font-size:38px; line-height:1.1;}
-    .hero h1 .script{font-size:1.15em !important;}
+    .hero h1 .script{font-size:1.44em !important;}
     .hero p{max-width:100%;}
     .hero-actions{flex-wrap:wrap;}
     .hero-stats{flex-wrap:wrap; row-gap:16px;}
     .hero-visual{padding:24px;}
     .section{padding:30px 20px 60px;}
     .section-head h2{font-size:24px;}
-    .section-head h2 .script{font-size:1.15em !important;}
+    .section-head h2 .script{font-size:1.44em !important;}
     .terrains{grid-template-columns:1fr;}
     .myth-grid{grid-template-columns:1fr;}
     .pb-grid{grid-template-columns:1fr;}
@@ -367,9 +367,8 @@
   <a href="index.html" class="logo"><div class="logo-mark">N</div>Ton BTS, en vrai</a>
   <div class="nav-links">
     <span class="active">Accueil</span>
-    <span>Le métier</span>
+    <a href="metier.html" style="text-decoration:none; color:inherit;"><span>Le métier</span></a>
     <span>Les 3 terrains</span>
-    <span>Test de personnalité</span>
     <span>Ressources</span>
   </div>
 </nav>
@@ -378,7 +377,7 @@
   <div class="doodle doodle-spin" style="top:120px; left:38%; font-size:26px; color:var(--yellow);">✦</div>
   <div>
     <div class="eyebrow-pill"><span class="eyebrow-dot"></span> Bienvenue promo 2026</div>
-    <h1>Le BTS NDRC,<br><span class="script" style="color:var(--yellow); font-size:1.75em;">sans filtres</span>, pour de vrai.</h1>
+    <h1>Le BTS NDRC,<br><span class="script" style="color:var(--yellow); font-size:2.19em;">sans filtres</span>, pour de vrai.</h1>
     <p>Explore les 3 terrains du métier, découvre une journée type sur chacun, et suis ta progression au fil de l'année — pas de blocs de compétences, des vraies missions.</p>
     <div class="hero-actions">
       <button class="pill-btn pb-primary">Commencer l'exploration <span class="pb-arrow">↗</span></button>
@@ -405,7 +404,7 @@
 <section class="section">
   <div class="section-head">
     <span class="kicker">TES 3 TERRAINS DE JEU</span>
-    <h2>Pas des blocs de compétences. Des terrains sur lesquels <span class="script" style="color:var(--rose); font-size:1.6em; white-space:nowrap;">devenir bon</span>.</h2>
+    <h2>Pas des blocs de compétences. Des terrains sur lesquels <span class="script" style="color:var(--rose); font-size:2.0em; white-space:nowrap;">devenir bon</span>.</h2>
   </div>
   <div class="terrains">
     <a href="terrain-faceaface.html" class="terrain-card c1 clickable">
@@ -435,7 +434,7 @@
 <section class="section" style="padding-top:0;">
   <div class="section-head">
     <span class="kicker">CONCRET, PAS THÉORIQUE</span>
-    <h2>Les problèmes d'entreprise que tu vas apprendre à <span class="script" style="color:var(--rose); font-size:1.5em;">résoudre</span></h2>
+    <h2>Les problèmes d'entreprise que tu vas apprendre à <span class="script" style="color:var(--rose); font-size:1.88em;">résoudre</span></h2>
     <p>Pas des cours dans le vide — de vrais problèmes que rencontrent les entreprises, terrain par terrain.</p>
   </div>
   <div class="pb-grid">
@@ -469,7 +468,7 @@
 <section class="section" style="padding-top:0;" id="prejuges">
   <div class="section-head">
     <span class="kicker">MISE AU DÉFI</span>
-    <h2>Les 10 <span class="script" style="color:var(--rose); font-size:1.5em;">préjugés</span> à déconstruire</h2>
+    <h2>Les 10 <span class="script" style="color:var(--rose); font-size:1.88em;">préjugés</span> à déconstruire</h2>
     <p>Vrai ou faux ? 10 idées reçues sur les 3 terrains du programme. Devine, découvre la réalité, et vois où tu en es.</p>
   </div>
   <div class="prej-card">
@@ -516,11 +515,17 @@
 
       <div class="pt-card">
         <div id="pt-intro">
-          <button class="pill-btn pb-primary" id="pt-start-btn">Commencer le test (20 questions) <span class="pb-arrow">↗</span></button>
+          <div class="prej-intro-facts">
+            <div class="prej-fact"><b>20</b><span>questions</span></div>
+            <div class="prej-fact"><b>3</b><span>résultats, un par terrain</span></div>
+            <div class="prej-fact"><b>2 min</b><span>pour tout faire</span></div>
+          </div>
+          <p class="prej-intro-text">Pas de bonnes ou mauvaises réponses — réponds comme tu es vraiment, pas comme tu penses qu'il faut répondre.</p>
+          <button class="pill-btn pb-primary" id="pt-start-btn" style="justify-content:center;">Commencer le test (20 questions) <span class="pb-arrow">↗</span></button>
         </div>
 
         <div id="pt-quiz" style="display:none;">
-          <div class="pt-step-label"><span id="pt-step-label">Question 1 / 8</span></div>
+          <div class="pt-step-label"><span id="pt-step-label">Question 1 / 20</span></div>
           <div class="pt-bar"><div class="pt-bar-fill" id="pt-bar-fill"></div></div>
           <div class="pt-question" id="pt-question"></div>
           <div id="pt-options"></div>
@@ -542,7 +547,7 @@
 <section class="section" style="padding-top:0;">
   <div class="jobs-strip">
     <div>
-      <h2>Des métiers que tu <span class="script" style="color:var(--yellow); font-size:1.6em;">croises déjà</span>.</h2>
+      <h2>Des métiers que tu <span class="script" style="color:var(--yellow); font-size:2.0em;">croises déjà</span>.</h2>
       <p>Chaque terrain débloque des fiches métiers concrètes, avec des exemples d'entreprises qui recrutent près de chez toi.</p>
     </div>
     <div class="job-chips">
@@ -562,6 +567,7 @@
 </footer>
 
 <script>
+
   // ---------- TEST DE PERSONNALITÉ (18 métiers, 3 terrains) ----------
   const PT_JOBS = {
     t1_commercial: { title: "Commercial terrain B to B", terrain: 1, blurb: "Direct et efficace, tu développes un portefeuille client en face à face.", file: "terrain-faceaface.html#commercial" },
@@ -585,169 +591,89 @@
   };
 
   const TERRAIN_LABEL = { 1: "Terrain 1 — Face à face", 2: "Terrain 2 — Digital", 3: "Terrain 3 — Réseaux" };
-  const TERRAIN_COLOR = { 1: { bg: "#E7EAF0", fg: "#0D1F3C" }, 2: { bg: "#FCE4EA", fg: "#E8194B" }, 3: { bg: "#FDEAE0", fg: "#F4894A" } };
+  const TERRAIN_COLOR = { 1: { bg: "#E7EAF0", fg: "#3F22EC" }, 2: { bg: "#FCE4EA", fg: "#FA58A7" }, 3: { bg: "#FBF9DC", fg: "#7A8600" } };
 
   const PT_QUIZ = [
-    {
-      q: "On te propose un plan à la dernière minute, tu...",
-      options: [
+    { q: "On te propose un plan à la dernière minute, tu...", options: [
         { text: "Tu dis oui tout de suite, sans trop réfléchir", job: "t1_commercial" },
         { text: "Tu demandes d'abord comment va la personne qui te le propose", job: "t2_conseiller" },
-        { text: "Tu regardes ton planning avant de t'organiser pour caser ça", job: "t3_chefsecteur" }
-      ]
-    },
-    {
-      q: "Le rôle que tu prends naturellement dans ton groupe de potes...",
-      options: [
+        { text: "Tu regardes ton planning avant de t'organiser pour caser ça", job: "t3_chefsecteur" } ] },
+    { q: "Le rôle que tu prends naturellement dans ton groupe de potes...", options: [
         { text: "Celui ou celle qui garde le contact avec tout le monde, année après année", job: "t1_charge" },
         { text: "Celui ou celle qui motive tout le monde à passer à l'action", job: "t2_televendeur" },
-        { text: "Celui ou celle qui explique et remet tout le monde sur la même page", job: "t3_animateurdistrib" }
-      ]
-    },
-    {
-      q: "Un sujet qui te passionne vraiment, tu peux en parler...",
-      options: [
+        { text: "Celui ou celle qui explique et remet tout le monde sur la même page", job: "t3_animateurdistrib" } ] },
+    { q: "Un sujet qui te passionne vraiment, tu peux en parler...", options: [
         { text: "Des heures, dans les moindres détails", job: "t1_technico" },
         { text: "En story ou en vidéo, pour le partager au plus grand nombre", job: "t2_animateur" },
-        { text: "Surtout avec les bonnes personnes, celles qui peuvent en faire quelque chose", job: "t3_animateurpartenaires" }
-      ]
-    },
-    {
-      q: "Dans une ville que tu ne connais pas, tu es plutôt du genre à...",
-      options: [
+        { text: "Surtout avec les bonnes personnes, celles qui peuvent en faire quelque chose", job: "t3_animateurpartenaires" } ] },
+    { q: "Dans une ville que tu ne connais pas, tu es plutôt du genre à...", options: [
         { text: "Aller vers les gens et demander des conseils direct", job: "t1_attache" },
         { text: "Éplucher les avis en ligne et comparer avant de choisir", job: "t2_ecommerce" },
-        { text: "Explorer seul·e, à ton rythme, sans itinéraire fixe", job: "t3_vdi" }
-      ]
-    },
-    {
-      q: "Ton rôle dans l'organisation d'un évènement (anniv, voyage entre potes...)...",
-      options: [
+        { text: "Explorer seul·e, à ton rythme, sans itinéraire fixe", job: "t3_vdi" } ] },
+    { q: "Ton rôle dans l'organisation d'un évènement (anniv, voyage entre potes...)...", options: [
         { text: "Tu gères la logistique et l'ambiance", job: "t1_animateur" },
         { text: "Tu répartis les tâches et tu suis que tout avance bien", job: "t2_superviseur" },
-        { text: "Tu convaincs les hésitants de venir", job: "t3_recruteur" }
-      ]
-    },
-    {
-      q: "Face à un désaccord entre deux amis...",
-      options: [
+        { text: "Tu convaincs les hésitants de venir", job: "t3_recruteur" } ] },
+    { q: "Face à un désaccord entre deux amis...", options: [
         { text: "Tu cherches un terrain d'entente entre les deux", job: "t1_negociateur" },
         { text: "Tu recrées du lien en organisant un moment tous ensemble", job: "t2_community" },
-        { text: "Tu détends l'ambiance avec un truc qui plaît à tout le monde", job: "t3_merchandiser" }
-      ]
-    },
-    {
-      q: "Quand tu veux convaincre tes parents de quelque chose...",
-      options: [
+        { text: "Tu détends l'ambiance avec un truc qui plaît à tout le monde", job: "t3_merchandiser" } ] },
+    { q: "Quand tu veux convaincre tes parents de quelque chose...", options: [
         { text: "Tu vas droit au but avec un bon argument", job: "t1_commercial" },
         { text: "Tu prends le temps de bien leur expliquer, en douceur", job: "t2_conseiller" },
-        { text: "Tu prépares ton dossier avant d'en parler", job: "t3_chefsecteur" }
-      ]
-    },
-    {
-      q: "Ce qu'on retient souvent de toi après une soirée...",
-      options: [
+        { text: "Tu prépares ton dossier avant d'en parler", job: "t3_chefsecteur" } ] },
+    { q: "Ce qu'on retient souvent de toi après une soirée...", options: [
         { text: "Que tu prends toujours des nouvelles de tout le monde", job: "t1_charge" },
         { text: "Que tu es hyper convaincant·e quand tu proposes un truc", job: "t2_televendeur" },
-        { text: "Que tu as réussi à apprendre un truc à quelqu'un", job: "t3_animateurdistrib" }
-      ]
-    },
-    {
-      q: "Sur les réseaux sociaux, tu es plutôt...",
-      options: [
+        { text: "Que tu as réussi à apprendre un truc à quelqu'un", job: "t3_animateurdistrib" } ] },
+    { q: "Sur les réseaux sociaux, tu es plutôt...", options: [
         { text: "Celui ou celle qui commente avec un avis hyper précis", job: "t1_technico" },
         { text: "Celui ou celle qui poste beaucoup et anime les discussions", job: "t2_animateur" },
-        { text: "Celui ou celle qui connecte les gens entre eux en commentaire", job: "t3_animateurpartenaires" }
-      ]
-    },
-    {
-      q: "Face à un imprévu financier (facture surprise, panne...)...",
-      options: [
+        { text: "Celui ou celle qui connecte les gens entre eux en commentaire", job: "t3_animateurpartenaires" } ] },
+    { q: "Face à un imprévu financier (facture surprise, panne...)...", options: [
         { text: "Tu appelles tout de suite pour négocier une solution", job: "t1_attache" },
         { text: "Tu compares plusieurs options avant de trancher", job: "t2_ecommerce" },
-        { text: "Tu gères ça seul·e, sans demander d'aide", job: "t3_vdi" }
-      ]
-    },
-    {
-      q: "Dans un devoir ou un projet de groupe...",
-      options: [
+        { text: "Tu gères ça seul·e, sans demander d'aide", job: "t3_vdi" } ] },
+    { q: "Dans un devoir ou un projet de groupe...", options: [
         { text: "Tu proposes des idées originales pour rendre ça vivant", job: "t1_animateur" },
         { text: "Tu répartis le travail et tu suis l'avancement", job: "t2_superviseur" },
-        { text: "Tu motives ceux qui traînent des pieds", job: "t3_recruteur" }
-      ]
-    },
-    {
-      q: "Ton style pour régler un conflit...",
-      options: [
+        { text: "Tu motives ceux qui traînent des pieds", job: "t3_recruteur" } ] },
+    { q: "Ton style pour régler un conflit...", options: [
         { text: "Tu trouves un compromis qui arrange tout le monde", job: "t1_negociateur" },
         { text: "Tu fais en sorte que le groupe reste soudé malgré tout", job: "t2_community" },
-        { text: "Tu détends l'atmosphère avec une bonne idée", job: "t3_merchandiser" }
-      ]
-    },
-    {
-      q: "Un ami te demande un service compliqué...",
-      options: [
+        { text: "Tu détends l'atmosphère avec une bonne idée", job: "t3_merchandiser" } ] },
+    { q: "Un ami te demande un service compliqué...", options: [
         { text: "Tu dis oui et tu trouves comment faire après", job: "t1_commercial" },
         { text: "Tu l'écoutes en détail avant de répondre", job: "t2_conseiller" },
-        { text: "Tu regardes ce que ça implique avant de t'engager", job: "t3_chefsecteur" }
-      ]
-    },
-    {
-      q: "Ta façon de fêter une victoire (examen, sport, projet...)...",
-      options: [
+        { text: "Tu regardes ce que ça implique avant de t'engager", job: "t3_chefsecteur" } ] },
+    { q: "Ta façon de fêter une victoire (examen, sport, projet...)...", options: [
         { text: "Tu appelles les gens qui t'ont soutenu·e depuis le début", job: "t1_charge" },
         { text: "Tu vises déjà l'objectif suivant", job: "t2_televendeur" },
-        { text: "Tu expliques comment tu as fait à ceux qui te le demandent", job: "t3_animateurdistrib" }
-      ]
-    },
-    {
-      q: "Ce qui t'agace le plus chez les autres...",
-      options: [
+        { text: "Tu expliques comment tu as fait à ceux qui te le demandent", job: "t3_animateurdistrib" } ] },
+    { q: "Ce qui t'agace le plus chez les autres...", options: [
         { text: "Les approximations, le manque de précision", job: "t1_technico" },
         { text: "Le manque de créativité", job: "t2_animateur" },
-        { text: "Les gens qui ne pensent qu'à eux, sans jamais aider personne", job: "t3_animateurpartenaires" }
-      ]
-    },
-    {
-      q: "Dans un magasin, si tu hésites sur un achat...",
-      options: [
+        { text: "Les gens qui ne pensent qu'à eux, sans jamais aider personne", job: "t3_animateurpartenaires" } ] },
+    { q: "Dans un magasin, si tu hésites sur un achat...", options: [
         { text: "Tu demandes conseil à un vendeur, direct", job: "t1_attache" },
         { text: "Tu regardes les avis en ligne avant de te décider", job: "t2_ecommerce" },
-        { text: "Tu prends ta décision seul·e, sans influence extérieure", job: "t3_vdi" }
-      ]
-    },
-    {
-      q: "Ton rôle dans une association, un club ou une équipe...",
-      options: [
+        { text: "Tu prends ta décision seul·e, sans influence extérieure", job: "t3_vdi" } ] },
+    { q: "Ton rôle dans une association, un club ou une équipe...", options: [
         { text: "Tu organises les temps forts de l'année", job: "t1_animateur" },
         { text: "Tu coordonnes les autres membres", job: "t2_superviseur" },
-        { text: "Tu vas chercher de nouveaux membres", job: "t3_recruteur" }
-      ]
-    },
-    {
-      q: "Face à deux amis qui ne s'entendent plus...",
-      options: [
+        { text: "Tu vas chercher de nouveaux membres", job: "t3_recruteur" } ] },
+    { q: "Face à deux amis qui ne s'entendent plus...", options: [
         { text: "Tu essaies de recréer le dialogue entre eux", job: "t1_negociateur" },
         { text: "Tu fais en sorte que le groupe ne se scinde pas", job: "t2_community" },
-        { text: "Tu détournes l'attention avec autre chose", job: "t3_merchandiser" }
-      ]
-    },
-    {
-      q: "Ta manière de prendre une décision importante...",
-      options: [
+        { text: "Tu détournes l'attention avec autre chose", job: "t3_merchandiser" } ] },
+    { q: "Ta manière de prendre une décision importante...", options: [
         { text: "Rapide, tu vas à l'essentiel", job: "t1_commercial" },
         { text: "Posée, tu prends le temps de digérer", job: "t2_conseiller" },
-        { text: "Méthodique, tu listes le pour et le contre", job: "t3_chefsecteur" }
-      ]
-    },
-    {
-      q: "Ce qui compte le plus pour toi dans une amitié...",
-      options: [
+        { text: "Méthodique, tu listes le pour et le contre", job: "t3_chefsecteur" } ] },
+    { q: "Ce qui compte le plus pour toi dans une amitié...", options: [
         { text: "La fidélité et la durée", job: "t1_charge" },
         { text: "L'énergie et le fait d'avancer ensemble", job: "t2_televendeur" },
-        { text: "Apprendre des choses l'un de l'autre", job: "t3_animateurdistrib" }
-      ]
-    }
+        { text: "Apprendre des choses l'un de l'autre", job: "t3_animateurdistrib" } ] }
   ];
 
   let ptCurrent = 0;

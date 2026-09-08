@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Le métier — BTS NDRC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Manrope:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-dark:#3F22EC;
+    --navy:#2E18B8;
+    --rose:#FA58A7;
+    --rose-bright:#FF7EC2;
+    --orange:#EFCA62;
+    --violet:#03E29D;
+    --violet-bright:#4DFFC0;
+    --violet-deep:#0A8F62;
+    --yellow:#DFF700;
+    --cream:#FFFFFF;
+    --cream-soft:#F1EEF7;
+    --grey:#5B6472;
+    --white:#FFFFFF;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Manrope', sans-serif;
+    background:var(--cream);
+    color:var(--navy-dark);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{font-family:'Sora', sans-serif;}
+  a{text-decoration:none; color:inherit;}
+  .script{font-family:'Caveat', cursive; font-weight:700;}
+
+  .doodle{position:absolute; opacity:0.9; pointer-events:none;}
+  .doodle-spin{animation:spin 18s linear infinite;}
+  @keyframes spin{from{transform:rotate(0deg);} to{transform:rotate(360deg);}}
+
+  /* pill buttons w/ circular icon, à la Hanuman/Nexora */
+  .pill-btn{
+    display:inline-flex; align-items:center; gap:10px;
+    font-weight:700; font-size:14.5px; border-radius:99px; border:none; cursor:pointer;
+    text-decoration:none;
+  }
+  .pill-btn .pb-arrow{
+    width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:13px; flex-shrink:0;
+  }
+  .pill-btn.pb-primary{background:var(--rose); color:white; padding:6px 6px 6px 22px;}
+  .pill-btn.pb-primary .pb-arrow{background:white; color:var(--rose);}
+  .pill-btn.pb-dark{background:var(--navy-dark); color:white; padding:6px 6px 6px 22px;}
+  .pill-btn.pb-dark .pb-arrow{background:var(--yellow); color:var(--navy-dark);}
+  .pill-btn.pb-outline{background:transparent; color:white; border:1.5px solid rgba(255,255,255,0.4); padding:6px 6px 6px 22px;}
+  .pill-btn.pb-outline .pb-arrow{background:rgba(255,255,255,0.15); color:white;}
+
+  .terrain-hero{
+    padding:56px 64px 60px;
+    background:var(--navy-dark);
+    position:relative; overflow:hidden;
+  }
+  .terrain-hero::before{
+    content:''; position:absolute; top:-120px; right:-80px; width:340px; height:340px;
+    background:var(--rose-bright); opacity:0.3; border-radius:50%; filter:blur(20px);
+  }
+  .th-inner{position:relative; max-width:720px;}
+  .th-kicker{display:flex; align-items:center; gap:10px; margin-bottom:20px;}
+  .th-kicker .num{
+    width:30px; height:30px; border-radius:9px; background:var(--rose);
+    display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:13px;
+  }
+  .th-kicker span{color:#AEB9CC; font-weight:700; font-size:13px;}
+  .terrain-hero h1{color:white; font-size:42px; font-weight:800; line-height:1.14; letter-spacing:-0.3px;}
+  .terrain-hero p{color:#C9D2E0; margin-top:18px; font-size:16px; line-height:1.65; max-width:600px;}
+  @media (max-width:1100px){
+    .terrain-hero{padding:36px 20px 32px;}
+    .terrain-hero h1{font-size:32px;}
+  }
+
+  /* ---------- MODALE FICHE MÉTIER ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(13,31,60,0.55);
+    display:none; align-items:center; justify-content:center; z-index:100; padding:24px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-card{
+    background:var(--white); border-radius:24px; max-width:560px; width:100%;
+    max-height:86vh; overflow-y:auto; padding:38px;
+    position:relative;
+  }
+  .modal-close{
+    position:absolute; top:22px; right:22px; width:34px; height:34px; border-radius:50%;
+    background:var(--cream-soft); border:none; font-size:16px; cursor:pointer; color:var(--navy-dark);
+  }
+  .modal-icon{width:46px; height:46px; border-radius:13px; display:flex; align-items:center; justify-content:center; color:white; font-size:19px; margin-bottom:20px;}
+  .modal-card h3{font-size:22px; font-weight:800; margin-bottom:6px;}
+  .modal-role{font-weight:700; font-size:13.5px; margin-bottom:20px;}
+  .modal-section{margin-top:20px;}
+  .modal-section h4{font-size:12.5px; font-weight:700; color:var(--grey); text-transform:uppercase; letter-spacing:.03em; margin-bottom:10px;}
+  .modal-section ul{list-style:none; display:flex; flex-direction:column; gap:8px;}
+  .modal-section li{font-size:14px; line-height:1.5; color:var(--navy-dark); padding-left:18px; position:relative;}
+  .modal-section li::before{content:''; position:absolute; left:0; top:8px; width:6px; height:6px; border-radius:50%; background:var(--rose);}
+  .modal-evol{background:var(--cream); border-radius:14px; padding:16px 18px; margin-top:22px; font-size:13.5px; line-height:1.55; color:var(--grey);}
+  .modal-evol b{color:var(--navy-dark);}
+
+  /* ---------- BULLES MÉTIERS ---------- */
+  .bubble-field{display:flex; flex-wrap:wrap; gap:14px; justify-content:center; padding:10px 0;}
+  .bubble{
+    display:inline-flex; align-items:center; gap:10px;
+    border-radius:99px; padding:14px 22px; cursor:pointer; border:none;
+    font-family:'Manrope',sans-serif; font-weight:700; font-size:14.5px;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .bubble:hover{transform:translateY(-3px) scale(1.03); box-shadow:0 12px 24px rgba(13,31,60,0.16);}
+  .bubble .b-dot{width:9px; height:9px; border-radius:50%; background:rgba(255,255,255,0.7); flex-shrink:0;}
+  .bubble.t1{background:var(--navy-dark); color:white;}
+  .bubble.t2{background:var(--rose); color:white;}
+  .bubble.t3{background:var(--yellow); color:var(--navy-dark);}
+  .bubble.t3 .b-dot{background:rgba(13,31,60,0.4);}
+  .bubble.big{font-size:17px; padding:18px 28px;}
+  .bubble-legend{display:flex; gap:24px; justify-content:center; margin-top:26px; flex-wrap:wrap;}
+  .bl-item{display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700; color:var(--grey);}
+  .bl-dot{width:12px; height:12px; border-radius:50%;}
+
+  /* ---------- IA ---------- */
+  .ia-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  .ia-card{background:var(--white); border-radius:22px; padding:26px; border:1px solid rgba(13,31,60,0.06);}
+  .ia-terrain-tag{display:inline-block; font-size:11px; font-weight:800; letter-spacing:.03em; padding:5px 12px; border-radius:99px; margin-bottom:16px;}
+  .ia-row{display:flex; gap:12px; margin-bottom:14px;}
+  .ia-row:last-child{margin-bottom:0;}
+  .ia-icon{width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; font-weight:800;}
+  .ia-icon.ia{background:var(--cream-soft); color:var(--navy-dark);}
+  .ia-icon.toi{background:var(--rose); color:white;}
+  .ia-text{font-size:13.5px; line-height:1.5; color:var(--navy-dark); padding-top:4px;}
+  .ia-text b{display:block; font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--grey); font-weight:800; margin-bottom:2px;}
+
+  .pill-btn.pb-outline-dark{background:transparent; color:var(--navy-dark); border:1.5px solid rgba(13,31,60,0.2); padding:6px 6px 6px 22px;}
+  .pill-btn.pb-outline-dark .pb-arrow{background:var(--cream-soft); color:var(--navy-dark);}
+
+  /* ---------- NAV ---------- */
+  nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px 64px;
+    position:sticky; top:0; z-index:20;
+    background:rgba(251,245,239,0.88);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(13,31,60,0.08);
+  }
+  .logo{
+    font-family:'Sora', sans-serif; font-weight:800; font-size:19px;
+    display:flex; align-items:center; gap:10px;
+    color:var(--navy-dark);
+  }
+  .logo-mark{
+    width:30px; height:30px; border-radius:9px;
+    background:linear-gradient(135deg, var(--rose) 0%, var(--violet) 100%);
+    display:flex; align-items:center; justify-content:center;
+    color:white; font-weight:800; font-size:13px;
+  }
+  .nav-links{display:flex; gap:38px; font-size:14.5px; font-weight:600; color:var(--navy-dark);}
+  .nav-links span{opacity:0.62; cursor:pointer;}
+  .nav-links span.active{opacity:1;}
+  .nav-cta{
+    background:var(--navy-dark); color:var(--cream);
+    padding:11px 22px; border-radius:99px; font-size:13.5px; font-weight:700;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding:86px 64px 76px;
+    display:grid; grid-template-columns:1.15fr 0.85fr; gap:50px; align-items:center;
+    background:var(--navy-dark);
+    position:relative; overflow:hidden;
+  }
+  .hero::before{
+    content:''; position:absolute; top:-140px; right:-100px; width:420px; height:420px;
+    background:var(--rose-bright); opacity:0.32; border-radius:50%; filter:blur(30px);
+  }
+  .hero::after{
+    content:''; position:absolute; bottom:-160px; left:-120px; width:360px; height:360px;
+    background:var(--orange); opacity:0.18; border-radius:50%; filter:blur(30px);
+  }
+  .hero > div:not(.doodle), .hero-visual{position:relative;}
+  .eyebrow-pill{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--white); border:1px solid rgba(13,31,60,0.1);
+    padding:7px 14px 7px 8px; border-radius:99px; font-size:12.5px; font-weight:700;
+    color:var(--navy-dark); margin-bottom:26px;
+  }
+  .eyebrow-dot{width:8px; height:8px; border-radius:50%; background:var(--rose);}
+  .hero h1{
+    font-size:54px; line-height:1.05; font-weight:800; letter-spacing:-0.5px;
+    color:var(--white);
+  }
+  .hero h1 em{font-style:normal; color:var(--orange);}
+  .hero p{
+    margin-top:22px; font-size:17px; line-height:1.6; color:#C9D2E0; max-width:440px;
+  }
+  .hero-actions{display:flex; gap:14px; margin-top:34px;}
+  .hero-stats{display:flex; gap:34px; margin-top:44px;}
+  .hero-stat b{color:white; font-family:'Sora',sans-serif; font-size:24px; display:block;}
+  .hero-stat span{color:#8FA0BC; font-size:12.5px; font-weight:600;}
+  .btn-primary{
+    background:var(--rose); color:white; font-weight:700; font-size:15px;
+    padding:15px 26px; border-radius:12px; border:none; cursor:pointer;
+  }
+  .btn-secondary{
+    background:transparent; color:white; font-weight:700; font-size:15px;
+    padding:15px 22px; border-radius:12px; border:1.5px solid rgba(255,255,255,0.35); cursor:pointer;
+  }
+
+  .hero-visual{
+    background:var(--white); border-radius:26px; padding:32px;
+    position:relative; overflow:hidden; box-shadow:0 30px 60px rgba(0,0,0,0.25);
+  }
+  .hero-visual::before{
+    content:''; position:absolute; top:-60px; right:-60px; width:200px; height:200px;
+    background:#FCE4EA; opacity:0.9; border-radius:50%; filter:blur(10px);
+  }
+  .hv-label{color:var(--rose); font-size:12px; font-weight:700; letter-spacing:.02em; position:relative;}
+  .hv-title{color:var(--navy-dark); font-family:'Sora',sans-serif; font-weight:700; font-size:19px; margin-top:6px; position:relative;}
+  .hv-list{margin-top:22px; display:flex; flex-direction:column; gap:16px; position:relative;}
+  .hv-item{display:flex; gap:12px; align-items:flex-start;}
+  .hv-time{font-size:12px; font-weight:700; color:var(--orange); width:52px; flex-shrink:0; padding-top:2px;}
+  .hv-dot{width:9px; height:9px; border-radius:50%; background:var(--rose); margin-top:5px; flex-shrink:0;}
+  .hv-text{color:var(--grey); font-size:13.5px; line-height:1.45;}
+  .hv-text b{color:var(--navy-dark);}
+
+  /* ---------- TERRAINS SECTION ---------- */
+  .section{padding:30px 64px 90px;}
+  .section-head{max-width:560px; margin-bottom:44px;}
+  .section-head .kicker{color:var(--rose); font-weight:700; font-size:13.5px; margin-bottom:10px; display:block;}
+  .section-head h2{font-size:32px; font-weight:800; letter-spacing:-0.3px;}
+
+  .terrains{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  .terrain-card{
+    border-radius:24px; padding:32px 26px 26px;
+    position:relative; overflow:hidden;
+    display:block; min-height:280px;
+  }
+  .terrain-card.c1{background:var(--navy-dark);}
+  .terrain-card.c2{background:var(--rose);}
+  .terrain-card.c3{background:var(--yellow);}  .terrain-card::after{
+    content:''; position:absolute; left:0; right:0; bottom:0; height:12px;
+    background:repeating-linear-gradient(-45deg, rgba(255,255,255,0.3) 0 7px, transparent 7px 14px);
+  }
+  .terrain-card.c3::after{background:repeating-linear-gradient(-45deg, rgba(13,31,60,0.14) 0 7px, transparent 7px 14px);}
+  .terrain-card.clickable{cursor:pointer; transition:transform .15s ease, box-shadow .15s ease;}
+  .terrain-card.clickable:hover{transform:translateY(-4px) rotate(-0.4deg); box-shadow:0 18px 34px rgba(13,31,60,0.22);}
+  .terrain-card.disabled{opacity:0.62;}
+  .terrain-card .tc-icon{
+    width:46px; height:46px; border-radius:13px;
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom:22px; color:var(--navy-dark); font-size:19px;
+    background:rgba(255,255,255,0.92);
+  }
+  .terrain-card.c1 .tc-icon{color:var(--violet-deep);}
+  .terrain-card h3{font-size:20px; font-weight:800; margin-bottom:10px; color:white; font-family:'Sora',sans-serif;}
+  .terrain-card p{font-size:14px; line-height:1.55; color:rgba(255,255,255,0.82);}
+  .terrain-card.c3 h3, .terrain-card.c3 p, .terrain-card.c3 .tc-progress-label, .terrain-card.c3 .tc-cta{color:var(--navy-dark);}
+  .terrain-card.c3 p{opacity:0.78;}
+  .tc-tag{display:inline-block; margin-top:0; margin-bottom:14px; font-size:11.5px; font-weight:800; padding:5px 12px; border-radius:99px; background:rgba(255,255,255,0.85); color:var(--rose);}
+  .tc-progress{margin-top:22px; height:6px; border-radius:99px; background:rgba(255,255,255,0.22); overflow:hidden;}
+  .tc-progress-fill{height:100%; border-radius:99px; background:white;}
+  .terrain-card.c1 .tc-progress-fill{width:38%;}
+  .terrain-card.c2 .tc-progress-fill{width:71%;}
+  .terrain-card.c3 .tc-progress-fill{width:12%; background:var(--navy-dark);}
+  .tc-progress-label{display:flex; justify-content:space-between; font-size:11.5px; color:rgba(255,255,255,0.75); margin-top:8px; font-weight:600;}
+  .tc-cta{margin-top:20px; font-size:13px; font-weight:800; color:white; display:inline-flex; align-items:center; gap:6px;}
+
+
+  /* ---------- JOBS STRIP ---------- */
+  .jobs-strip{
+    background:var(--navy-dark); border-radius:28px; padding:48px 54px;
+    display:grid; grid-template-columns:0.8fr 1.2fr; gap:40px; align-items:center;
+  }
+  .jobs-strip h2{color:white; font-size:27px; font-weight:800; line-height:1.2;}
+  .jobs-strip p{color:#AEB9CC; margin-top:14px; font-size:14.5px; line-height:1.6;}
+  .job-chips{display:flex; flex-wrap:wrap; gap:10px;}
+  .job-chip{
+    background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
+    color:#EDF1F7; padding:11px 17px; border-radius:12px; font-size:13.5px; font-weight:600;
+  }
+
+  /* ---------- TEST DE PERSONNALITÉ ---------- */
+  .quiz-banner{
+    background:linear-gradient(135deg, var(--rose) 0%, var(--violet) 100%);
+    border-radius:28px; padding:2px; margin-bottom:26px;
+  }
+  .quiz-banner-inner{
+    background:var(--cream); border-radius:26px; padding:44px 48px;
+  }
+  .qb-kicker{display:flex; align-items:center; gap:8px; margin-bottom:14px;}
+  .qb-kicker span{font-weight:800; font-size:13px; letter-spacing:.02em;
+    background:linear-gradient(135deg, var(--rose) 0%, var(--violet) 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .quiz-banner-inner h2{font-size:26px; font-weight:800; max-width:520px;}
+  .quiz-banner-inner > p{color:var(--grey); margin-top:10px; font-size:14.5px; max-width:520px; line-height:1.6;}
+
+  .pt-card{background:var(--white); border-radius:22px; padding:40px; border:1px solid rgba(13,31,60,0.06); margin-top:30px;}
+  .pt-bar{height:6px; border-radius:99px; background:var(--cream-soft); overflow:hidden; margin-bottom:30px;}
+  .pt-bar-fill{height:100%; background:linear-gradient(90deg, var(--rose), var(--orange)); border-radius:99px; width:0%; transition:width .3s ease;}
+  .pt-step-label{display:flex; justify-content:space-between; font-size:12.5px; font-weight:700; color:var(--grey); margin-bottom:8px;}
+  .pt-question{font-size:18px; font-weight:700; margin-bottom:20px;}
+  .pt-option{
+    text-align:left; background:var(--cream); border:1.5px solid transparent; border-radius:12px;
+    padding:15px 18px; font-size:14.5px; font-weight:600; color:var(--navy-dark); cursor:pointer;
+    width:100%; display:block; margin-bottom:10px; font-family:'Manrope',sans-serif;
+  }
+  .pt-option:hover{border-color:rgba(232,25,75,0.3); background:#FDEEE4;}
+  .pt-start-btn{
+    background:var(--navy-dark); color:white; font-weight:700; font-size:15px;
+    padding:15px 28px; border-radius:12px; border:none; cursor:pointer;
+  }
+  .pt-result{display:none;}
+  .pt-result-head{text-align:center; margin-bottom:28px;}
+  .pt-result-head .pt-label{color:var(--grey); font-size:13px; font-weight:700; margin-bottom:6px;}
+  .pt-result-head h3{font-size:23px; font-weight:800;}
+  .pt-results-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  .pt-result-card{background:var(--cream); border-radius:18px; padding:24px; border:1px solid rgba(13,31,60,0.06); position:relative;}
+  .pt-terrain-tag{display:inline-block; font-size:11px; font-weight:700; padding:4px 10px; border-radius:99px; margin-bottom:12px;}
+  .pt-result-card h4{font-size:15.5px; font-weight:700; margin-bottom:8px;}
+  .pt-result-card p{font-size:12.5px; color:var(--grey); line-height:1.5; margin-bottom:16px;}
+  .pt-result-card a{display:inline-block; font-size:12.5px; font-weight:700; color:var(--navy-dark); border-bottom:1.5px solid var(--navy-dark); padding-bottom:1px;}
+  .pt-restart{margin-top:26px; text-align:center;}
+  .pt-restart button{background:transparent; border:1.5px solid rgba(13,31,60,0.15); color:var(--navy-dark); font-weight:700; font-size:13.5px; padding:11px 20px; border-radius:12px; cursor:pointer;}
+
+  /* ---------- LE SAVAIS-TU ---------- */
+  .myth-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  .myth-card{
+    border-radius:26px; padding:32px 28px 26px; position:relative; overflow:hidden;
+    min-height:420px; display:flex; flex-direction:column;
+  }
+  .myth-card.m1{background:var(--rose);}
+  .myth-card.m2{background:var(--navy-dark);}
+  .myth-card.m3{background:var(--yellow);}
+  .myth-card::after{
+    content:''; position:absolute; left:0; right:0; bottom:0; height:14px;
+    background:repeating-linear-gradient(-45deg, rgba(255,255,255,0.35) 0 8px, transparent 8px 16px);
+  }
+  .myth-card.m3::after{background:repeating-linear-gradient(-45deg, rgba(13,31,60,0.16) 0 8px, transparent 8px 16px);}
+  .myth-badge{
+    width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.18);
+    display:flex; align-items:center; justify-content:center; font-size:15px; margin-bottom:18px;
+  }
+  .myth-card.m3 .myth-badge{background:rgba(13,31,60,0.12);}
+  .myth-tag{font-size:11.5px; font-weight:800; letter-spacing:.04em; margin-bottom:14px; opacity:0.85;}
+  .myth-claim{font-size:13.5px; font-weight:700; font-style:italic; line-height:1.4; margin-bottom:18px; opacity:0.9;}
+  .myth-stat{font-family:'Sora',sans-serif; font-weight:800; font-size:44px; line-height:1; margin-bottom:10px; letter-spacing:-1px;}
+  .myth-reality{font-size:13px; line-height:1.6; margin-bottom:auto; padding-bottom:16px;}
+  .myth-reality b{font-weight:800;}
+  .myth-source{font-size:10.5px; font-weight:700; opacity:0.65; padding-top:14px; position:relative; z-index:1;}
+  .myth-card.m1 .myth-tag, .myth-card.m1 .myth-claim, .myth-card.m1 .myth-stat, .myth-card.m1 .myth-reality, .myth-card.m1 .myth-source{color:white;}
+  .myth-card.m2 .myth-tag, .myth-card.m2 .myth-claim, .myth-card.m2 .myth-reality, .myth-card.m2 .myth-source{color:#DCE3EE;}
+  .myth-card.m2 .myth-stat{color:var(--violet-bright);}
+  .myth-card.m3 .myth-tag, .myth-card.m3 .myth-claim, .myth-card.m3 .myth-stat, .myth-card.m3 .myth-reality, .myth-card.m3 .myth-source{color:var(--navy-dark);}
+  .myth-card{cursor:pointer; transition:transform .15s ease, box-shadow .15s ease;}
+  .myth-card:hover{transform:translateY(-4px); box-shadow:0 16px 32px rgba(13,31,60,0.18);}
+  .myth-hidden{display:none;}
+  .myth-card.revealed .myth-hidden{display:block; animation:mythIn .3s ease;}
+  .myth-card.revealed .myth-reveal-prompt{display:none;}
+  .myth-reveal-prompt{
+    margin-top:6px; font-size:12.5px; font-weight:800; letter-spacing:.02em;
+    position:relative; z-index:1; opacity:0.85;
+  }
+  @keyframes mythIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+  .myth-cta-row{margin-top:26px; text-align:center;}
+
+  /* ---------- PROBLÈMES D'ENTREPRISE ---------- */
+  .pb-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  .pb-card{
+    border-radius:22px; padding:28px; position:relative; overflow:hidden;
+    display:block; min-height:200px;
+  }
+  .pb-card.pb-c1{background:var(--navy-dark);}
+  .pb-card.pb-c2{background:var(--rose);}
+  .pb-card.pb-c3{background:var(--yellow);}
+  .pb-card:hover{transform:translateY(-4px); box-shadow:0 16px 32px rgba(13,31,60,0.18);}
+  .pb-card{transition:transform .15s ease, box-shadow .15s ease;}
+  .pb-quote{font-size:15px; font-weight:700; font-style:italic; line-height:1.45; margin-bottom:16px; color:white;}
+  .pb-solve{font-size:13px; line-height:1.55; color:rgba(255,255,255,0.85);}
+  .pb-solve b{color:white;}
+  .pb-card.pb-c3 .pb-quote{color:var(--navy-dark);}
+  .pb-card.pb-c3 .pb-solve{color:rgba(13,31,60,0.75);}
+  .pb-card.pb-c3 .pb-solve b{color:var(--navy-dark);}
+
+  /* ---------- 10 PRÉJUGÉS ---------- */
+  .prej-card{background:var(--white); border-radius:22px; padding:40px; border:1px solid rgba(13,31,60,0.06);}
+  .prej-bar{height:6px; border-radius:99px; background:var(--cream-soft); overflow:hidden; margin-bottom:26px;}
+  .prej-bar-fill{height:100%; background:linear-gradient(90deg, var(--rose), var(--violet)); border-radius:99px; width:0%; transition:width .3s ease;}
+  .prej-step-label{display:flex; justify-content:space-between; font-size:12.5px; font-weight:700; color:var(--grey); margin-bottom:8px;}
+  .prej-theme-tag{display:inline-block; font-size:11px; font-weight:800; letter-spacing:.03em; padding:5px 12px; border-radius:99px; margin-bottom:18px; background:var(--cream); color:var(--rose);}
+  .prej-question{font-size:19px; font-weight:700; line-height:1.4; margin-bottom:26px;}
+  .prej-vf-row{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .prej-vf-btn{
+    padding:22px; border-radius:16px; border:2px solid var(--cream-soft); background:var(--cream);
+    font-family:'Sora',sans-serif; font-weight:800; font-size:16px; color:var(--navy-dark); cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .prej-vf-btn:hover{border-color:var(--rose);}
+  .prej-vf-btn[disabled]{cursor:default;}
+  .prej-vf-btn.correct{background:#E7F6EC; border-color:#3FAE5C; color:#1F6B34;}
+  .prej-vf-btn.wrong{background:#FCE9EA; border-color:var(--rose); color:var(--rose);}
+  .prej-feedback{margin-top:22px; padding:18px 20px; border-radius:14px; background:var(--cream); font-size:14px; line-height:1.55; display:none;}
+  .prej-feedback.show{display:block;}
+  .prej-feedback b{display:block; margin-bottom:4px; font-size:13px; letter-spacing:.02em;}
+  .prej-next{margin-top:20px; display:none;}
+  .prej-next.show{display:inline-flex;}
+  .prej-intro{text-align:center;}
+  .prej-intro-facts{display:flex; justify-content:center; gap:44px; margin-bottom:28px; flex-wrap:wrap;}
+  .prej-fact{display:flex; flex-direction:column; align-items:center;}
+  .prej-fact b{font-family:'Sora',sans-serif; font-size:30px; font-weight:800; color:var(--rose);}
+  .prej-fact span{font-size:12.5px; font-weight:600; color:var(--grey); margin-top:2px;}
+  .prej-intro-text{max-width:440px; margin:0 auto 28px; color:var(--grey); font-size:14px; line-height:1.6;}
+  .prej-result{display:none; text-align:center;}
+  .prej-result .pr-score{font-family:'Sora',sans-serif; font-size:48px; font-weight:800; color:var(--rose);}
+  .prej-result p{color:var(--grey); font-size:14.5px; margin:14px auto 22px; max-width:440px; line-height:1.55;}
+  .prej-result-actions{display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
+
+  footer{padding:36px 64px; display:flex; justify-content:space-between; align-items:center; color:var(--grey); font-size:13px;}
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 1100px){
+    nav{padding:16px 20px; flex-wrap:wrap; row-gap:10px;}
+    .nav-links{display:none;}
+    .ia-grid{grid-template-columns:1fr;}
+    .bubble.big{font-size:14.5px; padding:14px 22px;}
+    .hero{grid-template-columns:1fr; padding:44px 22px 40px; gap:32px;}
+    .hero h1{font-size:38px; line-height:1.1;}
+    .hero h1 .script{font-size:1.44em !important;}
+    .hero p{max-width:100%;}
+    .hero-actions{flex-wrap:wrap;}
+    .hero-stats{flex-wrap:wrap; row-gap:16px;}
+    .hero-visual{padding:24px;}
+    .section{padding:30px 20px 60px;}
+    .section-head h2{font-size:24px;}
+    .section-head h2 .script{font-size:1.44em !important;}
+    .terrains{grid-template-columns:1fr;}
+    .myth-grid{grid-template-columns:1fr;}
+    .pb-grid{grid-template-columns:1fr;}
+    .jobs-strip{grid-template-columns:1fr; padding:32px 24px;}
+    .quiz-banner-inner{padding:28px 22px;}
+    .pt-card{padding:22px;}
+    .pt-results-grid{grid-template-columns:1fr;}
+    footer{padding:24px 20px; flex-direction:column; gap:8px; text-align:center;}
+  }
+</style>
+<body>
+
+<nav>
+  <a href="index.html" class="logo"><div class="logo-mark">N</div>Ton BTS, en vrai</a>
+  <div class="nav-links">
+    <a href="index.html" style="text-decoration:none; color:inherit;"><span>Accueil</span></a>
+    <span class="active">Le métier</span>
+    <a href="les-3-terrains.html" style="text-decoration:none; color:inherit;"><span>Tes 3 terrains d'apprentissage</span></a>
+    <span>Ressources</span>
+  </div>
+</nav>
+
+<section class="terrain-hero">
+  <div class="th-inner">
+    <div class="th-kicker"><div class="num">✦</div><span>LE MÉTIER, EN VRAI</span></div>
+    <h1>Un seul diplôme,<br><span class="script" style="color:var(--yellow); font-size:1.5em;">des dizaines de métiers</span></h1>
+    <p>Le BTS NDRC ne mène pas à un seul poste — il ouvre sur des dizaines de métiers possibles, sur 3 terrains différents. Clique sur une bulle pour découvrir un métier.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <span class="kicker">TOUS LES MÉTIERS, EN UN COUP D'ŒIL</span>
+    <h2>18 métiers <span class="script" style="color:var(--rose); font-size:1.5em;">à explorer</span></h2>
+    <p>Chaque bulle est un métier réel que ce BTS ouvre. Clique dessus pour voir la fiche complète.</p>
+  </div>
+
+  <div class="bubble-field">
+    <button class="bubble t1 big" onclick="openJob('t1_commercial')"><span class="b-dot"></span>Commercial terrain B to B</button>
+    <button class="bubble t2 big" onclick="openJob('t2_conseiller')"><span class="b-dot"></span>Conseiller client digital</button>
+    <button class="bubble t3 big" onclick="openJob('t3_chefsecteur')"><span class="b-dot"></span>Chef·fe de secteur</button>
+    <button class="bubble t2" onclick="openJob('t2_animateur')"><span class="b-dot"></span>Animateur réseaux sociaux</button>
+    <button class="bubble t1" onclick="openJob('t1_charge')"><span class="b-dot"></span>Chargé·e de clientèle</button>
+    <button class="bubble t3" onclick="openJob('t3_merchandiser')"><span class="b-dot"></span>Merchandiser</button>
+    <button class="bubble t2" onclick="openJob('t2_televendeur')"><span class="b-dot"></span>Télévendeur·se</button>
+    <button class="bubble t1" onclick="openJob('t1_negociateur')"><span class="b-dot"></span>Négociateur·rice</button>
+    <button class="bubble t3 big" onclick="openJob('t3_animateurdistrib')"><span class="b-dot"></span>Animateur·rice réseau distributeurs</button>
+    <button class="bubble t2" onclick="openJob('t2_ecommerce')"><span class="b-dot"></span>Responsable e-commerce</button>
+    <button class="bubble t1 big" onclick="openJob('t1_technico')"><span class="b-dot"></span>Technico-commercial·e</button>
+    <button class="bubble t3" onclick="openJob('t3_vdi')"><span class="b-dot"></span>Conseiller·ère vente à domicile</button>
+    <button class="bubble t2 big" onclick="openJob('t2_superviseur')"><span class="b-dot"></span>Superviseur de plateau</button>
+    <button class="bubble t1" onclick="openJob('t1_attache')"><span class="b-dot"></span>Attaché·e commercial·e</button>
+    <button class="bubble t3" onclick="openJob('t3_recruteur')"><span class="b-dot"></span>Recruteur·se de réseau</button>
+    <button class="bubble t2" onclick="openJob('t2_community')"><span class="b-dot"></span>Community manager commercial</button>
+    <button class="bubble t1" onclick="openJob('t1_animateur')"><span class="b-dot"></span>Animateur·rice d'évènements</button>
+    <button class="bubble t3 big" onclick="openJob('t3_animateurpartenaires')"><span class="b-dot"></span>Animateur·rice réseau de partenaires</button>
+  </div>
+
+  <div class="bubble-legend">
+    <div class="bl-item"><span class="bl-dot" style="background:var(--navy-dark);"></span>Terrain 1 — Face à face</div>
+    <div class="bl-item"><span class="bl-dot" style="background:var(--rose);"></span>Terrain 2 — Digital</div>
+    <div class="bl-item"><span class="bl-dot" style="background:var(--yellow);"></span>Terrain 3 — Réseaux</div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="section-head">
+    <span class="kicker">SPOILER : ÇA NE DISPARAÎT PAS</span>
+    <h2>Les métiers, <span class="script" style="color:var(--violet-deep); font-size:1.5em;">avec l'IA</span>, grâce au BTS NDRC</h2>
+    <p>L'IA change la manière de travailler sur ces métiers — elle ne les remplace pas. Voici comment le travail se répartit, terrain par terrain.</p>
+  </div>
+
+  <div class="ia-grid">
+    <div class="ia-card">
+      <span class="ia-terrain-tag" style="background:#E7EAF0; color:var(--navy-dark);">TERRAIN 1 — PROSPECTION</span>
+      <div class="ia-row">
+        <div class="ia-icon ia">IA</div>
+        <div class="ia-text"><b>L'IA</b>repère les prospects les plus susceptibles d'acheter, à partir des données disponibles.</div>
+      </div>
+      <div class="ia-row">
+        <div class="ia-icon toi">TOI</div>
+        <div class="ia-text"><b>Toi</b>tu construis la relation, tu adaptes l'argumentaire et tu closes la vente.</div>
+      </div>
+    </div>
+
+    <div class="ia-card">
+      <span class="ia-terrain-tag" style="background:#E7EAF0; color:var(--navy-dark);">TERRAIN 1 — NÉGOCIATION</span>
+      <div class="ia-row">
+        <div class="ia-icon ia">IA</div>
+        <div class="ia-text"><b>L'IA</b>analyse les prix du marché et les données de la concurrence en quelques secondes.</div>
+      </div>
+      <div class="ia-row">
+        <div class="ia-icon toi">TOI</div>
+        <div class="ia-text"><b>Toi</b>tu gères les tensions, tu lis la personne en face de toi et tu trouves l'accord.</div>
+      </div>
+    </div>
+
+    <div class="ia-card">
+      <span class="ia-terrain-tag" style="background:#FCE4EA; color:var(--rose);">TERRAIN 2 — COMMUNITY MANAGEMENT</span>
+      <div class="ia-row">
+        <div class="ia-icon ia">IA</div>
+        <div class="ia-text"><b>L'IA</b>génère des brouillons de posts et repère les tendances à exploiter.</div>
+      </div>
+      <div class="ia-row">
+        <div class="ia-icon toi">TOI</div>
+        <div class="ia-text"><b>Toi</b>tu gardes la voix de la marque et tu décides la stratégie éditoriale.</div>
+      </div>
+    </div>
+
+    <div class="ia-card">
+      <span class="ia-terrain-tag" style="background:#FCE4EA; color:var(--rose);">TERRAIN 2 — RELATION CLIENT</span>
+      <div class="ia-row">
+        <div class="ia-icon ia">IA</div>
+        <div class="ia-text"><b>L'IA</b>répond aux questions simples via chatbot, 24h/24, sans temps d'attente.</div>
+      </div>
+      <div class="ia-row">
+        <div class="ia-icon toi">TOI</div>
+        <div class="ia-text"><b>Toi</b>tu prends le relais sur les cas complexes et les clients qui ont besoin d'être rassurés.</div>
+      </div>
+    </div>
+
+    <div class="ia-card">
+      <span class="ia-terrain-tag" style="background:#FBF9DC; color:#7A8600;">TERRAIN 3 — PILOTAGE RÉSEAU</span>
+      <div class="ia-row">
+        <div class="ia-icon ia">IA</div>
+        <div class="ia-text"><b>L'IA</b>centralise les chiffres de vente de tous les points de vente en temps réel.</div>
+      </div>
+      <div class="ia-row">
+        <div class="ia-icon toi">TOI</div>
+        <div class="ia-text"><b>Toi</b>tu décides où et comment agir sur le terrain, avec qui négocier en priorité.</div>
+      </div>
+    </div>
+
+    <div class="ia-card">
+      <span class="ia-terrain-tag" style="background:#FBF9DC; color:#7A8600;">TERRAIN 3 — MERCHANDISING</span>
+      <div class="ia-row">
+        <div class="ia-icon ia">IA</div>
+        <div class="ia-text"><b>L'IA</b>prédit quels produits vont bien se vendre selon la saison et le secteur.</div>
+      </div>
+      <div class="ia-row">
+        <div class="ia-icon toi">TOI</div>
+        <div class="ia-text"><b>Toi</b>tu mets en scène le rayon pour transformer cette prédiction en vraie vente.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>BTS NDRC — Bienvenue dans le métier</span>
+  <a href="index.html">← Retour à l'accueil</a>
+</footer>
+
+<!-- ---------- MODALE FICHE MÉTIER ---------- -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeJob()">✕</button>
+    <div class="modal-icon" id="modal-icon">◍</div>
+    <h3 id="modal-title"></h3>
+    <div class="modal-role" id="modal-role"></div>
+    <div class="modal-section">
+      <h4>Ta mission au quotidien</h4>
+      <ul id="modal-missions"></ul>
+    </div>
+    <div class="modal-section">
+      <h4>Compétences clés sur ce poste</h4>
+      <ul id="modal-skills"></ul>
+    </div>
+    <div class="modal-evol" id="modal-evol"></div>
+  </div>
+</div>
+
+<script>
+  // ---------- FICHES MÉTIERS (18 métiers, 3 terrains) ----------
+  const JOB_COLORS = { 1: "var(--navy-dark)", 2: "var(--rose)", 3: "var(--yellow)" };
+  const JOB_TEXT = { 1: "white", 2: "white", 3: "var(--navy-dark)" };
+
+  const JOBS = {
+    t1_commercial: { terrain:1, title: "Commercial terrain B to B", role: "Développer un portefeuille client d'entreprise à entreprise",
+      missions: ["Prospecter de nouvelles entreprises clientes","Présenter et négocier une offre en rendez-vous","Suivre et fidéliser un portefeuille de clients existants","Atteindre des objectifs de chiffre d'affaires"],
+      skills: ["Aisance relationnelle et sens de l'écoute","Négociation et gestion des objections","Organisation et autonomie sur le terrain"],
+      evol: "<b>Évolution possible :</b> chef des ventes, responsable secteur, key account manager." },
+    t1_charge: { terrain:1, title: "Chargé·e de clientèle", role: "Le point de contact durable d'un portefeuille de clients",
+      missions: ["Accueillir et conseiller les clients en rendez-vous","Faire le point régulièrement sur leurs besoins","Proposer des produits ou services adaptés","Gérer les dossiers administratifs liés aux contrats"],
+      skills: ["Sens du service et de la fidélisation","Rigueur administrative","Écoute et diagnostic des besoins"],
+      evol: "<b>Évolution possible :</b> responsable d'agence, conseiller senior, chargé de clientèle grands comptes." },
+    t1_technico: { terrain:1, title: "Technico-commercial·e", role: "Vendre un produit ou service technique en le maîtrisant à fond",
+      missions: ["Comprendre en détail les caractéristiques techniques de l'offre","Conseiller des clients pros avec un vrai niveau d'expertise","Rédiger des devis techniques et chiffrer des solutions","Faire le lien entre les équipes techniques et les clients"],
+      skills: ["Rigueur et appétence technique","Pédagogie pour vulgariser","Crédibilité face à des interlocuteurs experts"],
+      evol: "<b>Évolution possible :</b> ingénieur commercial, responsable technico-commercial, chef de produit." },
+    t1_attache: { terrain:1, title: "Attaché·e commercial·e", role: "Aller chercher de nouveaux clients là où ils ne t'attendent pas",
+      missions: ["Identifier et qualifier de nouveaux prospects","Prendre contact par téléphone, email ou en direct","Décrocher des rendez-vous pour l'équipe commerciale","Suivre et relancer les prospects dans la durée"],
+      skills: ["Ténacité et sens du contact","Résistance au refus","Organisation du suivi de prospection"],
+      evol: "<b>Évolution possible :</b> commercial terrain, responsable développement commercial." },
+    t1_animateur: { terrain:1, title: "Animateur·rice d'évènements commerciaux", role: "Créer et animer des moments qui font vendre",
+      missions: ["Organiser la présence de l'entreprise sur un salon ou un point de vente","Concevoir des animations qui donnent envie de s'arrêter","Aller au contact des visiteurs pour présenter l'offre","Faire le bilan quantitatif et qualitatif de l'évènement"],
+      skills: ["Créativité et sens de la mise en scène","Organisation logistique","Aisance à l'oral devant un public"],
+      evol: "<b>Évolution possible :</b> responsable évènementiel, chef de projet trade marketing." },
+    t1_negociateur: { terrain:1, title: "Négociateur·rice", role: "Trouver l'accord qui satisfait tout le monde",
+      missions: ["Analyser les enjeux et marges de manœuvre de chaque partie","Mener des négociations sur le prix et les conditions","Gérer les tensions ou désaccords en cours de discussion","Formaliser les accords trouvés"],
+      skills: ["Sang-froid et écoute active","Argumentation structurée","Sens du compromis gagnant-gagnant"],
+      evol: "<b>Évolution possible :</b> négociateur grands comptes, responsable des ventes." },
+    t2_conseiller: { terrain:2, title: "Conseiller client digital", role: "Le premier contact humain derrière les canaux digitaux",
+      missions: ["Répondre aux clients par tchat, email et réseaux sociaux","Traiter les réclamations et désamorcer les situations tendues","Mettre à jour les fiches client dans le CRM après chaque échange","Faire remonter les problèmes récurrents aux équipes concernées"],
+      skills: ["Écoute et gestion des émotions","Rapidité et rigueur dans le reporting","Maîtrise des outils de tchat et CRM"],
+      evol: "<b>Évolution possible :</b> superviseur de plateau, formateur d'équipe, ou spécialisation sur un canal." },
+    t2_televendeur: { terrain:2, title: "Télévendeur·se / téléconseiller", role: "Vendre et conseiller à distance, au téléphone",
+      missions: ["Prospecter ou traiter des appels entrants selon des scripts","Atteindre des objectifs de vente ou de satisfaction","Renseigner les indicateurs d'activité","Adapter son argumentaire selon le profil de l'appelant"],
+      skills: ["Aisance orale et sens de la persuasion","Résistance au stress et aux objections","Pilotage par indicateurs"],
+      evol: "<b>Évolution possible :</b> superviseur de plateau, formateur, expert technique de la vente à distance." },
+    t2_animateur: { terrain:2, title: "Animateur réseaux sociaux", role: "La voix d'une marque sur ses réseaux",
+      missions: ["Créer et publier du contenu adapté à chaque réseau","Répondre aux commentaires et messages privés","Surveiller la e-réputation et gérer les crises","Analyser les statistiques pour ajuster la stratégie"],
+      skills: ["Créativité et sens du ton de marque","Réactivité en cas de crise","Lecture de statistiques digitales"],
+      evol: "<b>Évolution possible :</b> responsable communication digitale, community manager senior." },
+    t2_ecommerce: { terrain:2, title: "Responsable e-commerce", role: "Le pilote d'une boutique en ligne",
+      missions: ["Mettre à jour et optimiser les fiches produits","Organiser les promotions et animations commerciales en ligne","Suivre le tunnel de vente et le panier moyen","Coordonner avec la logistique pour le suivi des commandes"],
+      skills: ["Analyse de données de vente","Sens du merchandising digital","Coordination avec plusieurs services"],
+      evol: "<b>Évolution possible :</b> responsable e-commerce senior, chef de projet digital, category manager." },
+    t2_superviseur: { terrain:2, title: "Superviseur de plateau", role: "Le manager d'une équipe de téléconseillers",
+      missions: ["Organiser les plannings et répartir la charge d'appels","Former et accompagner les nouveaux téléconseillers","Suivre les indicateurs de performance de l'équipe","Gérer les appels ou situations les plus complexes"],
+      skills: ["Leadership et pédagogie","Gestion d'équipe et des plannings","Analyse de la performance collective"],
+      evol: "<b>Évolution possible :</b> responsable de plateau, responsable de centre de relation client." },
+    t2_community: { terrain:2, title: "Community manager commercial", role: "Faire vivre une communauté au service des ventes",
+      missions: ["Animer une communauté de clients ou de prospects","Concevoir des opérations pour générer du trafic et des ventes","Modérer les échanges et entretenir une dynamique positive","Protéger et surveiller la réputation en ligne de la marque"],
+      skills: ["Animation de communauté","Sens commercial et créativité","Veille de e-réputation"],
+      evol: "<b>Évolution possible :</b> responsable communication digitale, brand content manager." },
+    t3_chefsecteur: { terrain:3, title: "Chef·fe de secteur", role: "Développer la présence d'une marque chez les distributeurs de son secteur",
+      missions: ["Visiter régulièrement les points de vente de son secteur géographique","Négocier l'implantation et la mise en avant des produits","Contrôler le respect des accords de référencement","Former les équipes en magasin aux nouveaux produits"],
+      skills: ["Autonomie et organisation de tournée","Négociation avec des responsables de rayon","Analyse de la performance par point de vente"],
+      evol: "<b>Évolution possible :</b> chef de secteur senior, responsable régional, chef des ventes." },
+    t3_animateurdistrib: { terrain:3, title: "Animateur·rice réseau distributeurs", role: "Faire vivre et monter en compétence un réseau de points de vente",
+      missions: ["Former les vendeurs des points de vente partenaires","Organiser des animations ou opérations commerciales en magasin","Suivre les résultats de vente par point de vente","Faire remonter les besoins du réseau en interne"],
+      skills: ["Pédagogie et animation de groupe","Sens du terrain","Suivi rigoureux des indicateurs réseau"],
+      evol: "<b>Évolution possible :</b> responsable animation réseau, responsable régional des ventes." },
+    t3_animateurpartenaires: { terrain:3, title: "Animateur·rice réseau de partenaires", role: "Développer et faire grandir un réseau de partenaires d'affaires",
+      missions: ["Sélectionner et intégrer de nouveaux partenaires","Animer la relation avec les partenaires existants","Organiser des temps forts pour dynamiser le réseau","Évaluer la performance et la rentabilité des partenariats"],
+      skills: ["Relationnel et diplomatie","Vision stratégique du réseau","Suivi de la performance partenaire"],
+      evol: "<b>Évolution possible :</b> responsable partenariats, directeur de réseau." },
+    t3_vdi: { terrain:3, title: "Conseiller·ère vente à domicile", role: "Vendre et conseiller en réunion, chez le client ou à distance",
+      missions: ["Organiser des réunions ou ateliers de vente à domicile","Présenter et vendre une gamme de produits","Développer son propre réseau de clients","Gérer sa propre activité en autonomie"],
+      skills: ["Autonomie et sens de l'organisation","Aisance à l'oral en petit groupe","Fidélisation client"],
+      evol: "<b>Évolution possible :</b> responsable d'équipe de vendeurs indépendants, formatrice réseau." },
+    t3_recruteur: { terrain:3, title: "Recruteur·se de réseau de vente directe", role: "Trouver et former les futurs vendeurs indépendants d'un réseau",
+      missions: ["Repérer et contacter des candidats potentiels","Présenter l'opportunité et le fonctionnement du réseau","Former les nouveaux vendeurs indépendants","Accompagner leurs premiers pas dans l'activité"],
+      skills: ["Sens du contact et de la conviction","Pédagogie","Suivi et accompagnement dans la durée"],
+      evol: "<b>Évolution possible :</b> responsable régional de réseau, directeur de réseau de vente directe." },
+    t3_merchandiser: { terrain:3, title: "Merchandiser", role: "Mettre en scène les produits pour donner envie d'acheter",
+      missions: ["Concevoir l'implantation et la mise en avant des produits en rayon","Installer et vérifier le bon respect du merchandising en magasin","Adapter les mises en scène aux temps forts commerciaux","Analyser l'impact des opérations sur les ventes"],
+      skills: ["Sens visuel et créativité","Rigueur d'exécution","Analyse des ventes par emplacement"],
+      evol: "<b>Évolution possible :</b> responsable merchandising, chef de secteur." }
+  };
+
+  function openJob(id){
+    const j = JOBS[id];
+    const bg = JOB_COLORS[j.terrain];
+    const fg = JOB_TEXT[j.terrain];
+    document.getElementById('modal-icon').style.background = bg;
+    document.getElementById('modal-icon').style.color = fg;
+    document.getElementById('modal-role').style.color = j.terrain === 3 ? '#7A8600' : bg;
+    document.getElementById('modal-title').textContent = j.title;
+    document.getElementById('modal-role').textContent = j.role;
+    document.getElementById('modal-missions').innerHTML = j.missions.map(m => `<li>${m}</li>`).join('');
+    document.getElementById('modal-skills').innerHTML = j.skills.map(s => `<li>${s}</li>`).join('');
+    document.getElementById('modal-evol').innerHTML = j.evol;
+    document.getElementById('modal-overlay').classList.add('open');
+  }
+  function closeJob(){
+    document.getElementById('modal-overlay').classList.remove('open');
+  }
+  document.getElementById('modal-overlay').addEventListener('click', (e) => {
+    if(e.target.id === 'modal-overlay') closeJob();
+  });
+
+  if (location.hash) {
+    const jid = location.hash.slice(1);
+    if (JOBS[jid]) openJob(jid);
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>BTS NDRC — Plateforme interactive (concept)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Manrope:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-dark:#3F22EC;
+    --navy:#2E18B8;
+    --rose:#FA58A7;
+    --rose-bright:#FF7EC2;
+    --orange:#EFCA62;
+    --violet:#03E29D;
+    --violet-bright:#4DFFC0;
+    --violet-deep:#0A8F62;
+    --yellow:#DFF700;
+    --cream:#FFFFFF;
+    --cream-soft:#F1EEF7;
+    --grey:#5B6472;
+    --white:#FFFFFF;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Manrope', sans-serif;
+    background:var(--cream);
+    color:var(--navy-dark);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{font-family:'Sora', sans-serif;}
+  a{text-decoration:none; color:inherit;}
+  .script{font-family:'Caveat', cursive; font-weight:700;}
+
+  .doodle{position:absolute; opacity:0.9; pointer-events:none;}
+  .doodle-spin{animation:spin 18s linear infinite;}
+  @keyframes spin{from{transform:rotate(0deg);} to{transform:rotate(360deg);}}
+
+  /* pill buttons w/ circular icon, à la Hanuman/Nexora */
+  .pill-btn{
+    display:inline-flex; align-items:center; gap:10px;
+    font-weight:700; font-size:14.5px; border-radius:99px; border:none; cursor:pointer;
+    text-decoration:none;
+  }
+  .pill-btn .pb-arrow{
+    width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:13px; flex-shrink:0;
+  }
+  .pill-btn.pb-primary{background:var(--rose); color:white; padding:6px 6px 6px 22px;}
+  .pill-btn.pb-primary .pb-arrow{background:white; color:var(--rose);}
+  .pill-btn.pb-dark{background:var(--navy-dark); color:white; padding:6px 6px 6px 22px;}
+  .pill-btn.pb-dark .pb-arrow{background:var(--yellow); color:var(--navy-dark);}
+  .pill-btn.pb-outline{background:transparent; color:white; border:1.5px solid rgba(255,255,255,0.4); padding:6px 6px 6px 22px;}
+  .pill-btn.pb-outline .pb-arrow{background:rgba(255,255,255,0.15); color:white;}
+  .pill-btn.pb-outline-dark{background:transparent; color:var(--navy-dark); border:1.5px solid rgba(13,31,60,0.2); padding:6px 6px 6px 22px;}
+  .pill-btn.pb-outline-dark .pb-arrow{background:var(--cream-soft); color:var(--navy-dark);}
+
+  /* ---------- NAV ---------- */
+  nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px 64px;
+    position:sticky; top:0; z-index:20;
+    background:rgba(251,245,239,0.88);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(13,31,60,0.08);
+  }
+  .logo{
+    font-family:'Sora', sans-serif; font-weight:800; font-size:19px;
+    display:flex; align-items:center; gap:10px;
+    color:var(--navy-dark);
+  }
+  .logo-mark{
+    width:30px; height:30px; border-radius:9px;
+    background:linear-gradient(135deg, var(--rose) 0%, var(--violet) 100%);
+    display:flex; align-items:center; justify-content:center;
+    color:white; font-weight:800; font-size:13px;
+  }
+  .nav-links{display:flex; gap:38px; font-size:14.5px; font-weight:600; color:var(--navy-dark);}
+  .nav-links span{opacity:0.62; cursor:pointer;}
+  .nav-links span.active{opacity:1;}
+  .nav-cta{
+    background:var(--navy-dark); color:var(--cream);
+    padding:11px 22px; border-radius:99px; font-size:13.5px; font-weight:700;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding:86px 64px 76px;
+    display:grid; grid-template-columns:1.15fr 0.85fr; gap:50px; align-items:center;
+    background:var(--navy-dark);
+    position:relative; overflow:hidden;
+  }
+  .hero::before{
+    content:''; position:absolute; top:-140px; right:-100px; width:420px; height:420px;
+    background:var(--rose-bright); opacity:0.32; border-radius:50%; filter:blur(30px);
+  }
+  .hero::after{
+    content:''; position:absolute; bottom:-160px; left:-120px; width:360px; height:360px;
+    background:var(--orange); opacity:0.18; border-radius:50%; filter:blur(30px);
+  }
+  .hero > div:not(.doodle), .hero-visual{position:relative;}
+  .eyebrow-pill{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--white); border:1px solid rgba(13,31,60,0.1);
+    padding:7px 14px 7px 8px; border-radius:99px; font-size:12.5px; font-weight:700;
+    color:var(--navy-dark); margin-bottom:26px;
+  }
+  .eyebrow-dot{width:8px; height:8px; border-radius:50%; background:var(--rose);}
+  .hero h1{
+    font-size:54px; line-height:1.05; font-weight:800; letter-spacing:-0.5px;
+    color:var(--white);
+  }
+  .hero h1 em{font-style:normal; color:var(--orange);}
+  .hero p{
+    margin-top:22px; font-size:17px; line-height:1.6; color:#C9D2E0; max-width:440px;
+  }
+  .hero-actions{display:flex; gap:14px; margin-top:34px;}
+  .hero-stats{display:flex; gap:34px; margin-top:44px;}
+  .hero-stat b{color:white; font-family:'Sora',sans-serif; font-size:24px; display:block;}
+  .hero-stat span{color:#8FA0BC; font-size:12.5px; font-weight:600;}
+  .btn-primary{
+    background:var(--rose); color:white; font-weight:700; font-size:15px;
+    padding:15px 26px; border-radius:12px; border:none; cursor:pointer;
+  }
+  .btn-secondary{
+    background:transparent; color:white; font-weight:700; font-size:15px;
+    padding:15px 22px; border-radius:12px; border:1.5px solid rgba(255,255,255,0.35); cursor:pointer;
+  }
+
+  .hero-visual{
+    background:var(--white); border-radius:26px; padding:32px;
+    position:relative; overflow:hidden; box-shadow:0 30px 60px rgba(0,0,0,0.25);
+  }
+  .hero-visual::before{
+    content:''; position:absolute; top:-60px; right:-60px; width:200px; height:200px;
+    background:#FCE4EA; opacity:0.9; border-radius:50%; filter:blur(10px);
+  }
+  .hv-label{color:var(--rose); font-size:12px; font-weight:700; letter-spacing:.02em; position:relative;}
+  .hv-title{color:var(--navy-dark); font-family:'Sora',sans-serif; font-weight:700; font-size:19px; margin-top:6px; position:relative;}
+  .hv-list{margin-top:22px; display:flex; flex-direction:column; gap:16px; position:relative;}
+  .hv-item{display:flex; gap:12px; align-items:flex-start;}
+  .hv-time{font-size:12px; font-weight:700; color:var(--orange); width:52px; flex-shrink:0; padding-top:2px;}
+  .hv-dot{width:9px; height:9px; border-radius:50%; background:var(--rose); margin-top:5px; flex-shrink:0;}
+  .hv-text{color:var(--grey); font-size:13.5px; line-height:1.45;}
+  .hv-text b{color:var(--navy-dark);}
+
+  /* ---------- TERRAINS SECTION ---------- */
+  .section{padding:30px 64px 90px;}
+  .section-head{max-width:560px; margin-bottom:44px;}
+  .section-head .kicker{color:var(--rose); font-weight:700; font-size:13.5px; margin-bottom:10px; display:block;}
+  .section-head h2{font-size:32px; font-weight:800; letter-spacing:-0.3px;}
+
+  .terrains{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  .terrain-card{
+    border-radius:24px; padding:32px 26px 26px;
+    position:relative; overflow:hidden;
+    display:block; min-height:280px;
+  }
+  .terrain-card.c1{background:var(--navy-dark);}
+  .terrain-card.c2{background:var(--rose);}
+  .terrain-card.c3{background:var(--yellow);}  .terrain-card::after{
+    content:''; position:absolute; left:0; right:0; bottom:0; height:12px;
+    background:repeating-linear-gradient(-45deg, rgba(255,255,255,0.3) 0 7px, transparent 7px 14px);
+  }
+  .terrain-card.c3::after{background:repeating-linear-gradient(-45deg, rgba(13,31,60,0.14) 0 7px, transparent 7px 14px);}
+  .terrain-card.clickable{cursor:pointer; transition:transform .15s ease, box-shadow .15s ease;}
+  .terrain-card.clickable:hover{transform:translateY(-4px) rotate(-0.4deg); box-shadow:0 18px 34px rgba(13,31,60,0.22);}
+  .terrain-card.disabled{opacity:0.62;}
+  .terrain-card .tc-icon{
+    width:46px; height:46px; border-radius:13px;
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom:22px; color:var(--navy-dark); font-size:19px;
+    background:rgba(255,255,255,0.92);
+  }
+  .terrain-card.c1 .tc-icon{color:var(--violet-deep);}
+  .terrain-card h3{font-size:20px; font-weight:800; margin-bottom:10px; color:white; font-family:'Sora',sans-serif;}
+  .terrain-card p{font-size:14px; line-height:1.55; color:rgba(255,255,255,0.82);}
+  .terrain-card.c3 h3, .terrain-card.c3 p, .terrain-card.c3 .tc-progress-label, .terrain-card.c3 .tc-cta{color:var(--navy-dark);}
+  .terrain-card.c3 p{opacity:0.78;}
+  .tc-tag{display:inline-block; margin-top:0; margin-bottom:14px; font-size:11.5px; font-weight:800; padding:5px 12px; border-radius:99px; background:rgba(255,255,255,0.85); color:var(--rose);}
+  .tc-progress{margin-top:22px; height:6px; border-radius:99px; background:rgba(255,255,255,0.22); overflow:hidden;}
+  .tc-progress-fill{height:100%; border-radius:99px; background:white;}
+  .terrain-card.c1 .tc-progress-fill{width:38%;}
+  .terrain-card.c2 .tc-progress-fill{width:71%;}
+  .terrain-card.c3 .tc-progress-fill{width:12%; background:var(--navy-dark);}
+  .tc-progress-label{display:flex; justify-content:space-between; font-size:11.5px; color:rgba(255,255,255,0.75); margin-top:8px; font-weight:600;}
+  .tc-cta{margin-top:20px; font-size:13px; font-weight:800; color:white; display:inline-flex; align-items:center; gap:6px;}
+
+
+  /* ---------- JOBS STRIP ---------- */
+  .jobs-strip{
+    background:var(--navy-dark); border-radius:28px; padding:48px 54px;
+    display:grid; grid-template-columns:0.8fr 1.2fr; gap:40px; align-items:center;
+  }
+  .jobs-strip h2{color:white; font-size:27px; font-weight:800; line-height:1.2;}
+  .jobs-strip p{color:#AEB9CC; margin-top:14px; font-size:14.5px; line-height:1.6;}
+  .job-chips{display:flex; flex-wrap:wrap; gap:10px;}
+  .job-chip{
+    background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
+    color:#EDF1F7; padding:11px 17px; border-radius:12px; font-size:13.5px; font-weight:600;
+  }
+
+  /* ---------- TEST DE PERSONNALITÉ ---------- */
+  .quiz-banner{
+    background:linear-gradient(135deg, var(--rose) 0%, var(--violet) 100%);
+    border-radius:28px; padding:2px; margin-bottom:26px;
+  }
+  .quiz-banner-inner{
+    background:var(--cream); border-radius:26px; padding:44px 48px;
+  }
+  .qb-kicker{display:flex; align-items:center; gap:8px; margin-bottom:14px;}
+  .qb-kicker span{font-weight:800; font-size:13px; letter-spacing:.02em;
+    background:linear-gradient(135deg, var(--rose) 0%, var(--violet) 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .quiz-banner-inner h2{font-size:26px; font-weight:800; max-width:520px;}
+  .quiz-banner-inner > p{color:var(--grey); margin-top:10px; font-size:14.5px; max-width:520px; line-height:1.6;}
+
+  .pt-card{background:var(--white); border-radius:22px; padding:40px; border:1px solid rgba(13,31,60,0.06); margin-top:30px;}
+  .pt-bar{height:6px; border-radius:99px; background:var(--cream-soft); overflow:hidden; margin-bottom:30px;}
+  .pt-bar-fill{height:100%; background:linear-gradient(90deg, var(--rose), var(--orange)); border-radius:99px; width:0%; transition:width .3s ease;}
+  .pt-step-label{display:flex; justify-content:space-between; font-size:12.5px; font-weight:700; color:var(--grey); margin-bottom:8px;}
+  .pt-question{font-size:18px; font-weight:700; margin-bottom:20px;}
+  .pt-option{
+    text-align:left; background:var(--cream); border:1.5px solid transparent; border-radius:12px;
+    padding:15px 18px; font-size:14.5px; font-weight:600; color:var(--navy-dark); cursor:pointer;
+    width:100%; display:block; margin-bottom:10px; font-family:'Manrope',sans-serif;
+  }
+  .pt-option:hover{border-color:rgba(232,25,75,0.3); background:#FDEEE4;}
+  .pt-start-btn{
+    background:var(--navy-dark); color:white; font-weight:700; font-size:15px;
+    padding:15px 28px; border-radius:12px; border:none; cursor:pointer;
+  }
+  .pt-result{display:none;}
+  .pt-result-head{text-align:center; margin-bottom:28px;}
+  .pt-result-head .pt-label{color:var(--grey); font-size:13px; font-weight:700; margin-bottom:6px;}
+  .pt-result-head h3{font-size:23px; font-weight:800;}
+  .pt-results-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  .pt-result-card{background:var(--cream); border-radius:18px; padding:24px; border:1px solid rgba(13,31,60,0.06); position:relative;}
+  .pt-terrain-tag{display:inline-block; font-size:11px; font-weight:700; padding:4px 10px; border-radius:99px; margin-bottom:12px;}
+  .pt-result-card h4{font-size:15.5px; font-weight:700; margin-bottom:8px;}
+  .pt-result-card p{font-size:12.5px; color:var(--grey); line-height:1.5; margin-bottom:16px;}
+  .pt-result-card a{display:inline-block; font-size:12.5px; font-weight:700; color:var(--navy-dark); border-bottom:1.5px solid var(--navy-dark); padding-bottom:1px;}
+  .pt-restart{margin-top:26px; text-align:center;}
+  .pt-restart button{background:transparent; border:1.5px solid rgba(13,31,60,0.15); color:var(--navy-dark); font-weight:700; font-size:13.5px; padding:11px 20px; border-radius:12px; cursor:pointer;}
+
+  /* ---------- LE SAVAIS-TU ---------- */
+  .myth-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  .myth-card{
+    border-radius:26px; padding:32px 28px 26px; position:relative; overflow:hidden;
+    min-height:420px; display:flex; flex-direction:column;
+  }
+  .myth-card.m1{background:var(--rose);}
+  .myth-card.m2{background:var(--navy-dark);}
+  .myth-card.m3{background:var(--yellow);}
+  .myth-card::after{
+    content:''; position:absolute; left:0; right:0; bottom:0; height:14px;
+    background:repeating-linear-gradient(-45deg, rgba(255,255,255,0.35) 0 8px, transparent 8px 16px);
+  }
+  .myth-card.m3::after{background:repeating-linear-gradient(-45deg, rgba(13,31,60,0.16) 0 8px, transparent 8px 16px);}
+  .myth-badge{
+    width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.18);
+    display:flex; align-items:center; justify-content:center; font-size:15px; margin-bottom:18px;
+  }
+  .myth-card.m3 .myth-badge{background:rgba(13,31,60,0.12);}
+  .myth-tag{font-size:11.5px; font-weight:800; letter-spacing:.04em; margin-bottom:14px; opacity:0.85;}
+  .myth-claim{font-size:13.5px; font-weight:700; font-style:italic; line-height:1.4; margin-bottom:18px; opacity:0.9;}
+  .myth-stat{font-family:'Sora',sans-serif; font-weight:800; font-size:44px; line-height:1; margin-bottom:10px; letter-spacing:-1px;}
+  .myth-reality{font-size:13px; line-height:1.6; margin-bottom:auto; padding-bottom:16px;}
+  .myth-reality b{font-weight:800;}
+  .myth-source{font-size:10.5px; font-weight:700; opacity:0.65; padding-top:14px; position:relative; z-index:1;}
+  .myth-card.m1 .myth-tag, .myth-card.m1 .myth-claim, .myth-card.m1 .myth-stat, .myth-card.m1 .myth-reality, .myth-card.m1 .myth-source{color:white;}
+  .myth-card.m2 .myth-tag, .myth-card.m2 .myth-claim, .myth-card.m2 .myth-reality, .myth-card.m2 .myth-source{color:#DCE3EE;}
+  .myth-card.m2 .myth-stat{color:var(--violet-bright);}
+  .myth-card.m3 .myth-tag, .myth-card.m3 .myth-claim, .myth-card.m3 .myth-stat, .myth-card.m3 .myth-reality, .myth-card.m3 .myth-source{color:var(--navy-dark);}
+  .myth-card{cursor:pointer; transition:transform .15s ease, box-shadow .15s ease;}
+  .myth-card:hover{transform:translateY(-4px); box-shadow:0 16px 32px rgba(13,31,60,0.18);}
+  .myth-hidden{display:none;}
+  .myth-card.revealed .myth-hidden{display:block; animation:mythIn .3s ease;}
+  .myth-card.revealed .myth-reveal-prompt{display:none;}
+  .myth-reveal-prompt{
+    margin-top:6px; font-size:12.5px; font-weight:800; letter-spacing:.02em;
+    position:relative; z-index:1; opacity:0.85;
+  }
+  @keyframes mythIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+  .myth-cta-row{margin-top:26px; text-align:center;}
+
+  /* ---------- PROBLÈMES D'ENTREPRISE ---------- */
+  .pb-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  .pb-card{
+    border-radius:22px; padding:28px; position:relative; overflow:hidden;
+    display:block; min-height:200px;
+  }
+  .pb-card.pb-c1{background:var(--navy-dark);}
+  .pb-card.pb-c2{background:var(--rose);}
+  .pb-card.pb-c3{background:var(--yellow);}
+  .pb-card:hover{transform:translateY(-4px); box-shadow:0 16px 32px rgba(13,31,60,0.18);}
+  .pb-card{transition:transform .15s ease, box-shadow .15s ease;}
+  .pb-quote{font-size:15px; font-weight:700; font-style:italic; line-height:1.45; margin-bottom:16px; color:white;}
+  .pb-solve{font-size:13px; line-height:1.55; color:rgba(255,255,255,0.85);}
+  .pb-solve b{color:white;}
+  .pb-card.pb-c3 .pb-quote{color:var(--navy-dark);}
+  .pb-card.pb-c3 .pb-solve{color:rgba(13,31,60,0.75);}
+  .pb-card.pb-c3 .pb-solve b{color:var(--navy-dark);}
+
+  /* ---------- 10 PRÉJUGÉS ---------- */
+  .prej-card{background:var(--white); border-radius:22px; padding:40px; border:1px solid rgba(13,31,60,0.06);}
+  .prej-bar{height:6px; border-radius:99px; background:var(--cream-soft); overflow:hidden; margin-bottom:26px;}
+  .prej-bar-fill{height:100%; background:linear-gradient(90deg, var(--rose), var(--violet)); border-radius:99px; width:0%; transition:width .3s ease;}
+  .prej-step-label{display:flex; justify-content:space-between; font-size:12.5px; font-weight:700; color:var(--grey); margin-bottom:8px;}
+  .prej-theme-tag{display:inline-block; font-size:11px; font-weight:800; letter-spacing:.03em; padding:5px 12px; border-radius:99px; margin-bottom:18px; background:var(--cream); color:var(--rose);}
+  .prej-question{font-size:19px; font-weight:700; line-height:1.4; margin-bottom:26px;}
+  .prej-vf-row{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .prej-vf-btn{
+    padding:22px; border-radius:16px; border:2px solid var(--cream-soft); background:var(--cream);
+    font-family:'Sora',sans-serif; font-weight:800; font-size:16px; color:var(--navy-dark); cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .prej-vf-btn:hover{border-color:var(--rose);}
+  .prej-vf-btn[disabled]{cursor:default;}
+  .prej-vf-btn.correct{background:#E7F6EC; border-color:#3FAE5C; color:#1F6B34;}
+  .prej-vf-btn.wrong{background:#FCE9EA; border-color:var(--rose); color:var(--rose);}
+  .prej-feedback{margin-top:22px; padding:18px 20px; border-radius:14px; background:var(--cream); font-size:14px; line-height:1.55; display:none;}
+  .prej-feedback.show{display:block;}
+  .prej-feedback b{display:block; margin-bottom:4px; font-size:13px; letter-spacing:.02em;}
+  .prej-next{margin-top:20px; display:none;}
+  .prej-next.show{display:inline-flex;}
+  .prej-intro{text-align:center;}
+  .prej-intro-facts{display:flex; justify-content:center; gap:44px; margin-bottom:28px; flex-wrap:wrap;}
+  .prej-fact{display:flex; flex-direction:column; align-items:center;}
+  .prej-fact b{font-family:'Sora',sans-serif; font-size:30px; font-weight:800; color:var(--rose);}
+  .prej-fact span{font-size:12.5px; font-weight:600; color:var(--grey); margin-top:2px;}
+  .prej-intro-text{max-width:440px; margin:0 auto 28px; color:var(--grey); font-size:14px; line-height:1.6;}
+  .prej-result{display:none; text-align:center;}
+  .prej-result .pr-score{font-family:'Sora',sans-serif; font-size:48px; font-weight:800; color:var(--rose);}
+  .prej-result p{color:var(--grey); font-size:14.5px; margin:14px auto 22px; max-width:440px; line-height:1.55;}
+  .prej-result-actions{display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
+
+  footer{padding:36px 64px; display:flex; justify-content:space-between; align-items:center; color:var(--grey); font-size:13px;}
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 1100px){
+    nav{padding:16px 20px; flex-wrap:wrap; row-gap:10px;}
+    .nav-links{display:none;}
+    .hero{grid-template-columns:1fr; padding:44px 22px 40px; gap:32px;}
+    .hero h1{font-size:38px; line-height:1.1;}
+    .hero h1 .script{font-size:1.44em !important;}
+    .hero p{max-width:100%;}
+    .hero-actions{flex-wrap:wrap;}
+    .hero-stats{flex-wrap:wrap; row-gap:16px;}
+    .hero-visual{padding:24px;}
+    .section{padding:30px 20px 60px;}
+    .section-head h2{font-size:24px;}
+    .section-head h2 .script{font-size:1.44em !important;}
+    .terrains{grid-template-columns:1fr;}
+    .myth-grid{grid-template-columns:1fr;}
+    .pb-grid{grid-template-columns:1fr;}
+    .jobs-strip{grid-template-columns:1fr; padding:32px 24px;}
+    .quiz-banner-inner{padding:28px 22px;}
+    .pt-card{padding:22px;}
+    .pt-results-grid{grid-template-columns:1fr;}
+    footer{padding:24px 20px; flex-direction:column; gap:8px; text-align:center;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo"><div class="logo-mark">N</div>Ton BTS, en vrai</a>
+  <div class="nav-links">
+    <span class="active">Accueil</span>
+    <a href="metier.html" style="text-decoration:none; color:inherit;"><span>Le métier</span></a>
+    <a href="les-3-terrains.html" style="text-decoration:none; color:inherit;"><span>Tes 3 terrains d'apprentissage</span></a>
+    <span>Ressources</span>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="doodle doodle-spin" style="top:120px; left:38%; font-size:26px; color:var(--yellow);">✦</div>
+  <div>
+    <div class="eyebrow-pill"><span class="eyebrow-dot"></span> Bienvenue promo 2026</div>
+    <h1>Le BTS NDRC,<br><span class="script" style="color:var(--yellow); font-size:2.19em;">sans filtres</span>, pour de vrai.</h1>
+    <p>Explore les 3 terrains du métier, découvre une journée type sur chacun, et suis ta progression au fil de l'année — pas de blocs de compétences, des vraies missions.</p>
+    <div class="hero-actions">
+      <button class="pill-btn pb-primary">Commencer l'exploration <span class="pb-arrow">↗</span></button>
+      <a href="#personality-test" class="pill-btn pb-outline">Faire le test <span class="pb-arrow">✦</span></a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><b>3</b><span>terrains à explorer</span></div>
+      <div class="hero-stat"><b>18</b><span>métiers de sortie</span></div>
+      <div class="hero-stat"><b>196 Md€</b><span>le marché e-commerce en France</span></div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="doodle" style="top:-14px; left:-10px; font-size:30px; color:var(--rose);">✦</div>
+    <div class="hv-label">TEST DE PERSONNALITÉ</div>
+    <div class="hv-title">2 minutes pour savoir quel métier te correspond</div>
+    <div class="hv-list">
+      <div class="hv-item"><div class="hv-dot"></div><div class="hv-text">20 questions sur ton quotidien — pas sur le programme.</div></div>
+      <div class="hv-item"><div class="hv-dot"></div><div class="hv-text">Un résultat sur chacun des <b>3 terrains</b> du métier.</div></div>
+    </div>
+    <a href="#personality-test" class="pill-btn pb-primary" style="margin-top:24px;">Je fais le test <span class="pb-arrow">↗</span></a>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <span class="kicker">TES 3 TERRAINS DE JEU</span>
+    <h2>Pas des blocs de compétences. Des terrains sur lesquels <span class="script" style="color:var(--rose); font-size:2.0em; white-space:nowrap;">devenir bon</span>.</h2>
+  </div>
+  <div class="terrains">
+    <a href="terrain-faceaface.html" class="terrain-card c1 clickable">
+      <div class="tc-icon">◎</div>
+      <h3>Le face à face</h3>
+      <p>Prospecter, négocier, vendre, animer des événements commerciaux.</p>
+      <div class="tc-cta">Découvrir ce terrain <span>↗</span></div>
+    </a>
+
+    <a href="terrain-digital.html" class="terrain-card c2 clickable">
+      <span class="tc-tag">Mon terrain avec toi</span>
+      <div class="tc-icon" style="margin-top:14px;">◍</div>
+      <h3>Le digital et la distance</h3>
+      <p>Tchat client, e-commerce, e-réputation, management de téléconseillers.</p>
+      <div class="tc-cta">Découvrir ce terrain <span>↗</span></div>
+    </a>
+
+    <a href="terrain-reseaux.html" class="terrain-card c3 clickable">
+      <div class="tc-icon">◈</div>
+      <h3>Les réseaux</h3>
+      <p>Distributeurs, partenaires, vendeurs indépendants : faire grandir un système.</p>
+      <div class="tc-cta">Découvrir ce terrain <span>↗</span></div>
+    </a>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="section-head">
+    <span class="kicker">CONCRET, PAS THÉORIQUE</span>
+    <h2>Les problèmes d'entreprise que tu vas apprendre à <span class="script" style="color:var(--rose); font-size:1.88em;">résoudre</span></h2>
+    <p>Pas des cours dans le vide — de vrais problèmes que rencontrent les entreprises, terrain par terrain.</p>
+  </div>
+  <div class="pb-grid">
+    <a href="terrain-faceaface.html" class="pb-card pb-c1">
+      <div class="pb-quote">« On n'arrive pas à décrocher de nouveaux rendez-vous clients. »</div>
+      <div class="pb-solve"><b>Tu sauras :</b> cibler, prospecter et construire un argumentaire qui capte l'attention dès les premières secondes.</div>
+    </a>
+    <a href="terrain-faceaface.html" class="pb-card pb-c1">
+      <div class="pb-quote">« Nos ventes stagnent, on négocie mal face à la concurrence. »</div>
+      <div class="pb-solve"><b>Tu sauras :</b> mener une négociation qui défend la valeur de l'offre, pas juste son prix.</div>
+    </a>
+    <a href="terrain-digital.html" class="pb-card pb-c2">
+      <div class="pb-quote">« On reçoit plein de messages clients et on n'arrive pas à tous les traiter à temps. »</div>
+      <div class="pb-solve"><b>Tu sauras :</b> organiser une relation client omnicanale sans rien laisser filer.</div>
+    </a>
+    <a href="terrain-digital.html" class="pb-card pb-c2">
+      <div class="pb-quote">« Notre boutique en ligne a du trafic mais très peu de ventes. »</div>
+      <div class="pb-solve"><b>Tu sauras :</b> diagnostiquer un tunnel d'achat et le rendre plus efficace.</div>
+    </a>
+    <a href="terrain-reseaux.html" class="pb-card pb-c3">
+      <div class="pb-quote">« Nos produits sont mal mis en avant chez nos distributeurs. »</div>
+      <div class="pb-solve"><b>Tu sauras :</b> négocier une meilleure implantation et former les équipes en magasin.</div>
+    </a>
+    <a href="terrain-reseaux.html" class="pb-card pb-c3">
+      <div class="pb-quote">« On a du mal à motiver notre réseau de vendeurs indépendants. »</div>
+      <div class="pb-solve"><b>Tu sauras :</b> recruter, former et animer un réseau qui reste engagé dans la durée.</div>
+    </a>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;" id="prejuges">
+  <div class="section-head">
+    <span class="kicker">MISE AU DÉFI</span>
+    <h2>Les 10 <span class="script" style="color:var(--rose); font-size:1.88em;">préjugés</span> à déconstruire</h2>
+    <p>Vrai ou faux ? 10 idées reçues sur les 3 terrains du programme. Devine, découvre la réalité, et vois où tu en es.</p>
+  </div>
+  <div class="prej-card">
+    <div id="prej-intro" class="prej-intro">
+      <div class="prej-intro-facts">
+        <div class="prej-fact"><b>10</b><span>affirmations</span></div>
+        <div class="prej-fact"><b>3</b><span>terrains couverts</span></div>
+        <div class="prej-fact"><b>2 min</b><span>pour tout faire</span></div>
+      </div>
+      <p class="prej-intro-text">Pour chaque affirmation, dis si c'est vrai ou faux — la réponse et l'explication s'affichent aussitôt.</p>
+      <button class="pill-btn pb-primary" id="prej-start-btn" style="justify-content:center;">Commencer le challenge (10 questions) <span class="pb-arrow">✦</span></button>
+    </div>
+
+    <div id="prej-quiz" style="display:none;">
+      <div class="prej-step-label"><span id="prej-step-label">Question 1 / 10</span><span id="prej-score-label">0 bonne réponse</span></div>
+      <div class="prej-bar"><div class="prej-bar-fill" id="prej-bar-fill"></div></div>
+      <div class="prej-theme-tag" id="prej-theme-tag"></div>
+      <div class="prej-question" id="prej-question"></div>
+      <div class="prej-vf-row" id="prej-vf-row">
+        <button class="prej-vf-btn" id="prej-btn-vrai" onclick="answerPrej(true)">✓ Vrai</button>
+        <button class="prej-vf-btn" id="prej-btn-faux" onclick="answerPrej(false)">✕ Faux</button>
+      </div>
+      <div class="prej-feedback" id="prej-feedback"></div>
+      <button class="pill-btn pb-dark prej-next" id="prej-next">Question suivante <span class="pb-arrow">↗</span></button>
+    </div>
+
+    <div class="prej-result" id="prej-result">
+      <div class="pr-score" id="pr-score">0/10</div>
+      <p id="pr-text"></p>
+      <div class="prej-result-actions">
+        <button class="pill-btn pb-dark" onclick="restartPrej()">Retenter le challenge <span class="pb-arrow">↗</span></button>
+        <a href="#personality-test" class="pill-btn pb-primary">Faire le test de personnalité <span class="pb-arrow">✦</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;" id="personality-test">
+  <div class="quiz-banner">
+    <div class="quiz-banner-inner">
+      <div class="qb-kicker"><span>✦ BONUS</span></div>
+      <h2>Le test, c'est par ici</h2>
+      <p>20 questions façon test de personnalité — un résultat sur chacun des 3 terrains à la fin.</p>
+
+      <div class="pt-card">
+        <div id="pt-intro">
+          <div class="prej-intro-facts">
+            <div class="prej-fact"><b>20</b><span>questions</span></div>
+            <div class="prej-fact"><b>3</b><span>résultats, un par terrain</span></div>
+            <div class="prej-fact"><b>2 min</b><span>pour tout faire</span></div>
+          </div>
+          <p class="prej-intro-text">Pas de bonnes ou mauvaises réponses — réponds comme tu es vraiment, pas comme tu penses qu'il faut répondre.</p>
+          <button class="pill-btn pb-primary" id="pt-start-btn" style="justify-content:center;">Commencer le test (20 questions) <span class="pb-arrow">↗</span></button>
+        </div>
+
+        <div id="pt-quiz" style="display:none;">
+          <div class="pt-step-label"><span id="pt-step-label">Question 1 / 20</span></div>
+          <div class="pt-bar"><div class="pt-bar-fill" id="pt-bar-fill"></div></div>
+          <div class="pt-question" id="pt-question"></div>
+          <div id="pt-options"></div>
+        </div>
+
+        <div class="pt-result" id="pt-result">
+          <div class="pt-result-head">
+            <div class="pt-label">TON PROFIL, TERRAIN PAR TERRAIN</div>
+            <h3>Un métier qui te correspond sur chacun des 3 terrains</h3>
+          </div>
+          <div class="pt-results-grid" id="pt-results-grid"></div>
+          <div class="pt-restart"><button onclick="restartPT()">Refaire le test</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="jobs-strip">
+    <div>
+      <h2>Des métiers que tu <span class="script" style="color:var(--yellow); font-size:2.0em;">croises déjà</span>.</h2>
+      <p>Chaque terrain débloque des fiches métiers concrètes, avec des exemples d'entreprises qui recrutent près de chez toi.</p>
+    </div>
+    <div class="job-chips">
+      <div class="job-chip">Conseiller client digital</div>
+      <div class="job-chip">Commercial grande distrib.</div>
+      <div class="job-chip">Animateur réseaux sociaux</div>
+      <div class="job-chip">Télévendeur·se</div>
+      <div class="job-chip">Commercial terrain B to B</div>
+      <div class="job-chip">Animateur de réseau</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>BTS NDRC — Bienvenue dans le métier</span>
+  <span>Concept visuel — v1</span>
+</footer>
+
+<script>
+
+  // ---------- TEST DE PERSONNALITÉ (18 métiers, 3 terrains) ----------
+  const PT_JOBS = {
+    t1_commercial: { title: "Commercial terrain B to B", terrain: 1, blurb: "Direct et efficace, tu développes un portefeuille client en face à face.", file: "terrain-faceaface.html#commercial" },
+    t1_charge: { title: "Chargé·e de clientèle", terrain: 1, blurb: "Tu construis une relation de confiance qui dure dans le temps.", file: "terrain-faceaface.html#charge" },
+    t1_technico: { title: "Technico-commercial·e", terrain: 1, blurb: "Tu maîtrises un sujet à fond pour convaincre des clients pros.", file: "terrain-faceaface.html#technico" },
+    t1_attache: { title: "Attaché·e commercial·e", terrain: 1, blurb: "Tu n'as pas peur d'aller vers l'inconnu pour décrocher un rendez-vous.", file: "terrain-faceaface.html#attache" },
+    t1_animateur: { title: "Animateur·rice d'évènements commerciaux", terrain: 1, blurb: "Tu aimes créer et organiser des moments qui font vendre.", file: "terrain-faceaface.html#animateur" },
+    t1_negociateur: { title: "Négociateur·rice", terrain: 1, blurb: "Tu trouves le compromis qui satisfait tout le monde.", file: "terrain-faceaface.html#negociateur" },
+    t2_conseiller: { title: "Conseiller client digital", terrain: 2, blurb: "Tu as le sens de l'écoute et tu désamorces les situations à distance.", file: "terrain-digital.html#conseiller" },
+    t2_televendeur: { title: "Télévendeur·se / téléconseiller", terrain: 2, blurb: "Tu aimes l'objectif clair et le contact direct au téléphone.", file: "terrain-digital.html#televendeur" },
+    t2_animateur: { title: "Animateur réseaux sociaux", terrain: 2, blurb: "Tu captes l'attention et tu fais vivre une marque en ligne.", file: "terrain-digital.html#animateur" },
+    t2_ecommerce: { title: "Responsable e-commerce", terrain: 2, blurb: "Tu aimes comprendre ce qui marche et ajuster à coups de chiffres.", file: "terrain-digital.html#ecommerce" },
+    t2_superviseur: { title: "Superviseur de plateau", terrain: 2, blurb: "Tu sais fédérer et donner le rythme à une équipe à distance.", file: "terrain-digital.html#superviseur" },
+    t2_community: { title: "Community manager commercial", terrain: 2, blurb: "Tu as le sens du lien et tu fais grandir une communauté.", file: "terrain-digital.html#community" },
+    t3_chefsecteur: { title: "Chef·fe de secteur", terrain: 3, blurb: "Tu es rigoureux·se et tu négocies sur le terrain, en autonomie.", file: "terrain-reseaux.html#chefsecteur" },
+    t3_animateurdistrib: { title: "Animateur·rice réseau distributeurs", terrain: 3, blurb: "Tu aimes former et transmettre à un réseau de points de vente.", file: "terrain-reseaux.html#animateurdistrib" },
+    t3_animateurpartenaires: { title: "Animateur·rice réseau de partenaires", terrain: 3, blurb: "Tu tisses des liens et tu fais grandir un réseau dans la durée.", file: "terrain-reseaux.html#animateurpartenaires" },
+    t3_vdi: { title: "Conseiller·ère vente à domicile", terrain: 3, blurb: "Tu aimes l'autonomie et gérer ta propre petite activité.", file: "terrain-reseaux.html#vdi" },
+    t3_recruteur: { title: "Recruteur·se de réseau", terrain: 3, blurb: "Tu donnes confiance et tu sais repérer du potentiel chez les autres.", file: "terrain-reseaux.html#recruteur" },
+    t3_merchandiser: { title: "Merchandiser", terrain: 3, blurb: "Tu as le sens du visuel et du détail pour donner envie d'acheter.", file: "terrain-reseaux.html#merchandiser" }
+  };
+
+  const TERRAIN_LABEL = { 1: "Terrain 1 — Face à face", 2: "Terrain 2 — Digital", 3: "Terrain 3 — Réseaux" };
+  const TERRAIN_COLOR = { 1: { bg: "#E7EAF0", fg: "#3F22EC" }, 2: { bg: "#FCE4EA", fg: "#FA58A7" }, 3: { bg: "#FBF9DC", fg: "#7A8600" } };
+
+  const PT_QUIZ = [
+    { q: "On te propose un plan à la dernière minute, tu...", options: [
+        { text: "Tu dis oui tout de suite, sans trop réfléchir", job: "t1_commercial" },
+        { text: "Tu demandes d'abord comment va la personne qui te le propose", job: "t2_conseiller" },
+        { text: "Tu regardes ton planning avant de t'organiser pour caser ça", job: "t3_chefsecteur" } ] },
+    { q: "Le rôle que tu prends naturellement dans ton groupe de potes...", options: [
+        { text: "Celui ou celle qui garde le contact avec tout le monde, année après année", job: "t1_charge" },
+        { text: "Celui ou celle qui motive tout le monde à passer à l'action", job: "t2_televendeur" },
+        { text: "Celui ou celle qui explique et remet tout le monde sur la même page", job: "t3_animateurdistrib" } ] },
+    { q: "Un sujet qui te passionne vraiment, tu peux en parler...", options: [
+        { text: "Des heures, dans les moindres détails", job: "t1_technico" },
+        { text: "En story ou en vidéo, pour le partager au plus grand nombre", job: "t2_animateur" },
+        { text: "Surtout avec les bonnes personnes, celles qui peuvent en faire quelque chose", job: "t3_animateurpartenaires" } ] },
+    { q: "Dans une ville que tu ne connais pas, tu es plutôt du genre à...", options: [
+        { text: "Aller vers les gens et demander des conseils direct", job: "t1_attache" },
+        { text: "Éplucher les avis en ligne et comparer avant de choisir", job: "t2_ecommerce" },
+        { text: "Explorer seul·e, à ton rythme, sans itinéraire fixe", job: "t3_vdi" } ] },
+    { q: "Ton rôle dans l'organisation d'un évènement (anniv, voyage entre potes...)...", options: [
+        { text: "Tu gères la logistique et l'ambiance", job: "t1_animateur" },
+        { text: "Tu répartis les tâches et tu suis que tout avance bien", job: "t2_superviseur" },
+        { text: "Tu convaincs les hésitants de venir", job: "t3_recruteur" } ] },
+    { q: "Face à un désaccord entre deux amis...", options: [
+        { text: "Tu cherches un terrain d'entente entre les deux", job: "t1_negociateur" },
+        { text: "Tu recrées du lien en organisant un moment tous ensemble", job: "t2_community" },
+        { text: "Tu détends l'ambiance avec un truc qui plaît à tout le monde", job: "t3_merchandiser" } ] },
+    { q: "Quand tu veux convaincre tes parents de quelque chose...", options: [
+        { text: "Tu vas droit au but avec un bon argument", job: "t1_commercial" },
+        { text: "Tu prends le temps de bien leur expliquer, en douceur", job: "t2_conseiller" },
+        { text: "Tu prépares ton dossier avant d'en parler", job: "t3_chefsecteur" } ] },
+    { q: "Ce qu'on retient souvent de toi après une soirée...", options: [
+        { text: "Que tu prends toujours des nouvelles de tout le monde", job: "t1_charge" },
+        { text: "Que tu es hyper convaincant·e quand tu proposes un truc", job: "t2_televendeur" },
+        { text: "Que tu as réussi à apprendre un truc à quelqu'un", job: "t3_animateurdistrib" } ] },
+    { q: "Sur les réseaux sociaux, tu es plutôt...", options: [
+        { text: "Celui ou celle qui commente avec un avis hyper précis", job: "t1_technico" },
+        { text: "Celui ou celle qui poste beaucoup et anime les discussions", job: "t2_animateur" },
+        { text: "Celui ou celle qui connecte les gens entre eux en commentaire", job: "t3_animateurpartenaires" } ] },
+    { q: "Face à un imprévu financier (facture surprise, panne...)...", options: [
+        { text: "Tu appelles tout de suite pour négocier une solution", job: "t1_attache" },
+        { text: "Tu compares plusieurs options avant de trancher", job: "t2_ecommerce" },
+        { text: "Tu gères ça seul·e, sans demander d'aide", job: "t3_vdi" } ] },
+    { q: "Dans un devoir ou un projet de groupe...", options: [
+        { text: "Tu proposes des idées originales pour rendre ça vivant", job: "t1_animateur" },
+        { text: "Tu répartis le travail et tu suis l'avancement", job: "t2_superviseur" },
+        { text: "Tu motives ceux qui traînent des pieds", job: "t3_recruteur" } ] },
+    { q: "Ton style pour régler un conflit...", options: [
+        { text: "Tu trouves un compromis qui arrange tout le monde", job: "t1_negociateur" },
+        { text: "Tu fais en sorte que le groupe reste soudé malgré tout", job: "t2_community" },
+        { text: "Tu détends l'atmosphère avec une bonne idée", job: "t3_merchandiser" } ] },
+    { q: "Un ami te demande un service compliqué...", options: [
+        { text: "Tu dis oui et tu trouves comment faire après", job: "t1_commercial" },
+        { text: "Tu l'écoutes en détail avant de répondre", job: "t2_conseiller" },
+        { text: "Tu regardes ce que ça implique avant de t'engager", job: "t3_chefsecteur" } ] },
+    { q: "Ta façon de fêter une victoire (examen, sport, projet...)...", options: [
+        { text: "Tu appelles les gens qui t'ont soutenu·e depuis le début", job: "t1_charge" },
+        { text: "Tu vises déjà l'objectif suivant", job: "t2_televendeur" },
+        { text: "Tu expliques comment tu as fait à ceux qui te le demandent", job: "t3_animateurdistrib" } ] },
+    { q: "Ce qui t'agace le plus chez les autres...", options: [
+        { text: "Les approximations, le manque de précision", job: "t1_technico" },
+        { text: "Le manque de créativité", job: "t2_animateur" },
+        { text: "Les gens qui ne pensent qu'à eux, sans jamais aider personne", job: "t3_animateurpartenaires" } ] },
+    { q: "Dans un magasin, si tu hésites sur un achat...", options: [
+        { text: "Tu demandes conseil à un vendeur, direct", job: "t1_attache" },
+        { text: "Tu regardes les avis en ligne avant de te décider", job: "t2_ecommerce" },
+        { text: "Tu prends ta décision seul·e, sans influence extérieure", job: "t3_vdi" } ] },
+    { q: "Ton rôle dans une association, un club ou une équipe...", options: [
+        { text: "Tu organises les temps forts de l'année", job: "t1_animateur" },
+        { text: "Tu coordonnes les autres membres", job: "t2_superviseur" },
+        { text: "Tu vas chercher de nouveaux membres", job: "t3_recruteur" } ] },
+    { q: "Face à deux amis qui ne s'entendent plus...", options: [
+        { text: "Tu essaies de recréer le dialogue entre eux", job: "t1_negociateur" },
+        { text: "Tu fais en sorte que le groupe ne se scinde pas", job: "t2_community" },
+        { text: "Tu détournes l'attention avec autre chose", job: "t3_merchandiser" } ] },
+    { q: "Ta manière de prendre une décision importante...", options: [
+        { text: "Rapide, tu vas à l'essentiel", job: "t1_commercial" },
+        { text: "Posée, tu prends le temps de digérer", job: "t2_conseiller" },
+        { text: "Méthodique, tu listes le pour et le contre", job: "t3_chefsecteur" } ] },
+    { q: "Ce qui compte le plus pour toi dans une amitié...", options: [
+        { text: "La fidélité et la durée", job: "t1_charge" },
+        { text: "L'énergie et le fait d'avancer ensemble", job: "t2_televendeur" },
+        { text: "Apprendre des choses l'un de l'autre", job: "t3_animateurdistrib" } ] }
+  ];
+
+  let ptCurrent = 0;
+  const ptTally = {};
+
+  document.getElementById('pt-start-btn').addEventListener('click', () => {
+    document.getElementById('pt-intro').style.display = 'none';
+    document.getElementById('pt-quiz').style.display = 'block';
+    renderPT();
+  });
+
+  function renderPT(){
+    const item = PT_QUIZ[ptCurrent];
+    document.getElementById('pt-step-label').textContent = `Question ${ptCurrent+1} / ${PT_QUIZ.length}`;
+    document.getElementById('pt-bar-fill').style.width = `${(ptCurrent/PT_QUIZ.length)*100}%`;
+    document.getElementById('pt-question').textContent = item.q;
+    const opts = document.getElementById('pt-options');
+    opts.innerHTML = '';
+    item.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'pt-option';
+      btn.textContent = opt.text;
+      btn.onclick = () => selectPT(opt.job);
+      opts.appendChild(btn);
+    });
+  }
+
+  function selectPT(job){
+    ptTally[job] = (ptTally[job] || 0) + 1;
+    ptCurrent++;
+    if(ptCurrent < PT_QUIZ.length){
+      renderPT();
+    } else {
+      document.getElementById('pt-bar-fill').style.width = '100%';
+      const ranked = [1, 2, 3].map(t => {
+        const idsForTerrain = Object.keys(PT_JOBS).filter(id => PT_JOBS[id].terrain === t);
+        let best = idsForTerrain[0], bestScore = -1;
+        idsForTerrain.forEach(id => {
+          const s = ptTally[id] || 0;
+          if (s > bestScore) { best = id; bestScore = s; }
+        });
+        return { id: best, score: bestScore };
+      });
+
+      const grid = document.getElementById('pt-results-grid');
+      grid.innerHTML = '';
+      ranked.forEach((r) => {
+        const j = PT_JOBS[r.id];
+        const col = TERRAIN_COLOR[j.terrain];
+        const card = document.createElement('div');
+        card.className = 'pt-result-card';
+        card.innerHTML = `
+          <span class="pt-terrain-tag" style="background:${col.bg}; color:${col.fg};">${TERRAIN_LABEL[j.terrain]}</span>
+          <h4>${j.title}</h4>
+          <p>${j.blurb}</p>
+          <a href="${j.file}">Voir la fiche métier</a>
+        `;
+        grid.appendChild(card);
+      });
+
+      document.getElementById('pt-quiz').style.display = 'none';
+      document.getElementById('pt-result').style.display = 'block';
+    }
+  }
+
+  function restartPT(){
+    ptCurrent = 0;
+    Object.keys(ptTally).forEach(k => delete ptTally[k]);
+    document.getElementById('pt-result').style.display = 'none';
+    document.getElementById('pt-intro').style.display = 'block';
+    document.getElementById('pt-quiz').style.display = 'none';
+  }
+
+  // ---------- BULLES "LE SAVAIS-TU" ----------
+  function revealMyth(card){
+    card.classList.add('revealed');
+  }
+
+  // ---------- LES 10 PRÉJUGÉS ----------
+  const PREJ = [
+    {
+      theme: "TERRAIN 1 — FACE À FACE",
+      q: "Le commercial terrain est un métier en voie de disparition à cause du digital.",
+      answer: false,
+      explain: "Le digital change la manière de vendre, mais le contact humain reste décisif dès que la vente se complexifie."
+    },
+    {
+      theme: "TERRAIN 1 — FACE À FACE",
+      q: "En négociation, la meilleure stratégie est toujours de baisser le prix en premier.",
+      answer: false,
+      explain: "Une bonne négociation cherche d'abord un accord gagnant-gagnant sur la valeur, pas juste un prix cassé."
+    },
+    {
+      theme: "TERRAIN 1 — FACE À FACE",
+      q: "Sur les gros dossiers B to B, la confiance et la relation humaine font souvent la différence entre deux offres.",
+      answer: true,
+      explain: "Vrai — à offre équivalente, c'est souvent la qualité de la relation commerciale qui fait gagner le contrat."
+    },
+    {
+      theme: "TERRAIN 2 — DIGITAL",
+      q: "Le métier de community manager n'existera plus dans quelques années à cause de l'IA.",
+      answer: false,
+      explain: "L'IA automatise la production de contenu, mais la stratégie de marque et la gestion de communauté restent humaines."
+    },
+    {
+      theme: "TERRAIN 2 — DIGITAL",
+      q: "Gérer un e-commerce, c'est facile : il suffit de mettre des produits en ligne.",
+      answer: false,
+      explain: "Ça demande du marketing, de l'analyse de données, de la logistique et une vraie gestion de la relation client."
+    },
+    {
+      theme: "TERRAIN 2 — DIGITAL",
+      q: "Un conseiller client digital doit savoir désamorcer un client énervé sans le voir ni l'entendre.",
+      answer: true,
+      explain: "Vrai — sans langage corporel ni ton de voix, désamorcer une situation par écrit demande une vraie expertise."
+    },
+    {
+      theme: "TERRAIN 2 — DIGITAL",
+      q: "Une stratégie réseaux sociaux de marque a de vrais objectifs commerciaux, pas juste esthétiques.",
+      answer: true,
+      explain: "Vrai — trafic, conversion, e-réputation : une page de marque se pilote avec de vrais indicateurs business."
+    },
+    {
+      theme: "TERRAIN 3 — RÉSEAUX",
+      q: "La grande distribution n'a plus besoin de commerciaux, tout se décide par algorithme.",
+      answer: false,
+      explain: "Les accords de référencement et l'implantation en rayon se négocient toujours avec de vrais interlocuteurs."
+    },
+    {
+      theme: "TERRAIN 3 — RÉSEAUX",
+      q: "La vente à domicile (VDI) est un statut professionnel encadré par la loi.",
+      answer: true,
+      explain: "Vrai — le statut de vendeur à domicile indépendant est encadré par le droit du travail français."
+    },
+    {
+      theme: "TERRAIN 3 — RÉSEAUX",
+      q: "Un réseau de distributeurs se pilote tout seul une fois qu'il est lancé.",
+      answer: false,
+      explain: "Faux — ça demande un suivi constant : animation, formation, contrôle des accords, résolution de conflits."
+    }
+  ];
+
+  let prejCurrent = 0, prejScore = 0;
+
+  document.getElementById('prej-start-btn').addEventListener('click', () => {
+    document.getElementById('prej-intro').style.display = 'none';
+    document.getElementById('prej-quiz').style.display = 'block';
+    renderPrej();
+  });
+
+  function renderPrej(){
+    const item = PREJ[prejCurrent];
+    document.getElementById('prej-step-label').textContent = `Question ${prejCurrent+1} / ${PREJ.length}`;
+    document.getElementById('prej-score-label').textContent = `${prejScore} bonne${prejScore>1?'s':''} réponse${prejScore>1?'s':''}`;
+    document.getElementById('prej-bar-fill').style.width = `${(prejCurrent/PREJ.length)*100}%`;
+    document.getElementById('prej-theme-tag').textContent = item.theme;
+    document.getElementById('prej-question').textContent = item.q;
+    const vraiBtn = document.getElementById('prej-btn-vrai');
+    const fauxBtn = document.getElementById('prej-btn-faux');
+    vraiBtn.disabled = false; fauxBtn.disabled = false;
+    vraiBtn.classList.remove('correct','wrong');
+    fauxBtn.classList.remove('correct','wrong');
+    document.getElementById('prej-feedback').classList.remove('show');
+    document.getElementById('prej-next').classList.remove('show');
+  }
+
+  function answerPrej(userSaysTrue){
+    const item = PREJ[prejCurrent];
+    const vraiBtn = document.getElementById('prej-btn-vrai');
+    const fauxBtn = document.getElementById('prej-btn-faux');
+    vraiBtn.disabled = true; fauxBtn.disabled = true;
+
+    const correctBtn = item.answer ? vraiBtn : fauxBtn;
+    const chosenBtn = userSaysTrue ? vraiBtn : fauxBtn;
+    correctBtn.classList.add('correct');
+    if(chosenBtn !== correctBtn) chosenBtn.classList.add('wrong');
+
+    const isCorrect = (userSaysTrue === item.answer);
+    if(isCorrect) prejScore++;
+    document.getElementById('prej-score-label').textContent = `${prejScore} bonne${prejScore>1?'s':''} réponse${prejScore>1?'s':''}`;
+
+    const fb = document.getElementById('prej-feedback');
+    fb.innerHTML = `<b>${isCorrect ? 'Exact !' : 'Pas tout à fait.'}</b>${item.explain}`;
+    fb.classList.add('show');
+    document.getElementById('prej-next').classList.add('show');
+  }
+
+  document.getElementById('prej-next').addEventListener('click', () => {
+    prejCurrent++;
+    if(prejCurrent < PREJ.length){
+      renderPrej();
+    } else {
+      document.getElementById('prej-bar-fill').style.width = '100%';
+      document.getElementById('prej-quiz').style.display = 'none';
+      document.getElementById('prej-result').style.display = 'block';
+      document.getElementById('pr-score').textContent = `${prejScore}/${PREJ.length}`;
+      const msg = prejScore >= 8
+        ? "Tu as un vrai regard critique sur le métier — bravo."
+        : prejScore >= 5
+        ? "Pas mal ! Encore quelques préjugés à déconstruire."
+        : "Félicitations, tu es au bon endroit pour déconstruire ces idées reçues — c'est exactement ce qu'on va faire ensemble cette année.";
+      document.getElementById('pr-text').textContent = msg;
+    }
+  });
+
+  function restartPrej(){
+    prejCurrent = 0; prejScore = 0;
+    document.getElementById('prej-result').style.display = 'none';
+    document.getElementById('prej-intro').style.display = 'block';
+    document.getElementById('prej-quiz').style.display = 'none';
+  }
+</script>
+
+</body>
+</html>

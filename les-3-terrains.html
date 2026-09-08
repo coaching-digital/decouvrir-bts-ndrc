@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Tes 3 terrains d'apprentissage — BTS NDRC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Manrope:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-dark:#3F22EC;
+    --navy:#2E18B8;
+    --rose:#FA58A7;
+    --rose-bright:#FF7EC2;
+    --orange:#EFCA62;
+    --violet:#03E29D;
+    --violet-bright:#4DFFC0;
+    --violet-deep:#0A8F62;
+    --yellow:#DFF700;
+    --cream:#FFFFFF;
+    --cream-soft:#F1EEF7;
+    --grey:#5B6472;
+    --white:#FFFFFF;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Manrope', sans-serif;
+    background:var(--cream);
+    color:var(--navy-dark);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{font-family:'Sora', sans-serif;}
+  a{text-decoration:none; color:inherit;}
+  .script{font-family:'Caveat', cursive; font-weight:700;}
+
+  .doodle{position:absolute; opacity:0.9; pointer-events:none;}
+  .doodle-spin{animation:spin 18s linear infinite;}
+  @keyframes spin{from{transform:rotate(0deg);} to{transform:rotate(360deg);}}
+
+  /* pill buttons w/ circular icon, à la Hanuman/Nexora */
+  .pill-btn{
+    display:inline-flex; align-items:center; gap:10px;
+    font-weight:700; font-size:14.5px; border-radius:99px; border:none; cursor:pointer;
+    text-decoration:none;
+  }
+  .pill-btn .pb-arrow{
+    width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:13px; flex-shrink:0;
+  }
+  .pill-btn.pb-primary{background:var(--rose); color:white; padding:6px 6px 6px 22px;}
+  .pill-btn.pb-primary .pb-arrow{background:white; color:var(--rose);}
+  .pill-btn.pb-dark{background:var(--navy-dark); color:white; padding:6px 6px 6px 22px;}
+  .pill-btn.pb-dark .pb-arrow{background:var(--yellow); color:var(--navy-dark);}
+  .pill-btn.pb-outline{background:transparent; color:white; border:1.5px solid rgba(255,255,255,0.4); padding:6px 6px 6px 22px;}
+  .pill-btn.pb-outline .pb-arrow{background:rgba(255,255,255,0.15); color:white;}
+
+  .terrain-hero{
+    padding:56px 64px 60px;
+    background:var(--navy-dark);
+    position:relative; overflow:hidden;
+  }
+  .terrain-hero::before{
+    content:''; position:absolute; top:-120px; right:-80px; width:340px; height:340px;
+    background:var(--rose-bright); opacity:0.3; border-radius:50%; filter:blur(20px);
+  }
+  .th-inner{position:relative; max-width:720px;}
+  .th-kicker{display:flex; align-items:center; gap:10px; margin-bottom:20px;}
+  .th-kicker .num{
+    width:30px; height:30px; border-radius:9px; background:var(--rose);
+    display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:13px;
+  }
+  .th-kicker span{color:#AEB9CC; font-weight:700; font-size:13px;}
+  .terrain-hero h1{color:white; font-size:42px; font-weight:800; line-height:1.14; letter-spacing:-0.3px;}
+  .terrain-hero p{color:#C9D2E0; margin-top:18px; font-size:16px; line-height:1.65; max-width:600px;}
+  @media (max-width:1100px){
+    .terrain-hero{padding:36px 20px 32px;}
+    .terrain-hero h1{font-size:32px;}
+  }
+
+  /* ---------- 3 COLONNES BLOCS ---------- */
+  .blocs-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  .bloc-card{border-radius:24px; padding:30px 26px; position:relative; overflow:hidden; display:flex; flex-direction:column;}
+  .bloc-card.b1{background:var(--navy-dark);}
+  .bloc-card.b2{background:var(--rose);}
+  .bloc-card.b3{background:var(--yellow);}
+  .bloc-card::after{content:''; position:absolute; left:0; right:0; bottom:0; height:12px; background:repeating-linear-gradient(-45deg, rgba(255,255,255,0.3) 0 7px, transparent 7px 14px);}
+  .bloc-card.b3::after{background:repeating-linear-gradient(-45deg, rgba(13,31,60,0.14) 0 7px, transparent 7px 14px);}
+  .bloc-num{width:34px; height:34px; border-radius:10px; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:14px; margin-bottom:18px;}
+  .bloc-card.b3 .bloc-num{background:rgba(13,31,60,0.14); color:var(--navy-dark);}
+  .bloc-card h3{font-size:20px; font-weight:800; color:white; margin-bottom:8px; font-family:'Sora',sans-serif;}
+  .bloc-card.b3 h3{color:var(--navy-dark);}
+  .bloc-card .bloc-unit{font-size:11.5px; font-weight:800; letter-spacing:.03em; color:rgba(255,255,255,0.7); margin-bottom:14px;}
+  .bloc-card.b3 .bloc-unit{color:rgba(13,31,60,0.55);}
+  .bloc-card ul{list-style:none; display:flex; flex-direction:column; gap:9px; margin-bottom:20px; flex-grow:1; position:relative; z-index:1;}
+  .bloc-card li{font-size:13.5px; line-height:1.5; color:rgba(255,255,255,0.88); padding-left:16px; position:relative;}
+  .bloc-card li::before{content:''; position:absolute; left:0; top:7px; width:5px; height:5px; border-radius:50%; background:rgba(255,255,255,0.7);}
+  .bloc-card.b3 li{color:rgba(13,31,60,0.78);}
+  .bloc-card.b3 li::before{background:rgba(13,31,60,0.5);}
+  .bloc-cta{font-size:13px; font-weight:800; color:white; display:inline-flex; align-items:center; gap:6px; position:relative; z-index:1;}
+  .bloc-card.b3 .bloc-cta{color:var(--navy-dark);}
+
+  /* ---------- MATIÈRES GÉNÉRALES ---------- */
+  .gen-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  .gen-card{background:var(--white); border-radius:22px; padding:28px; border:1px solid rgba(13,31,60,0.06);}
+  .gen-icon{width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; margin-bottom:18px; color:white;}
+  .gen-card.g1 .gen-icon{background:var(--violet);}
+  .gen-card.g2 .gen-icon{background:var(--rose);}
+  .gen-card.g3 .gen-icon{background:var(--orange);}
+  .gen-unit{font-size:11px; font-weight:800; letter-spacing:.03em; color:var(--grey); margin-bottom:8px;}
+  .gen-card h3{font-size:17px; font-weight:800; margin-bottom:10px;}
+  .gen-card ul{list-style:none; display:flex; flex-direction:column; gap:8px;}
+  .gen-card li{font-size:13px; line-height:1.5; color:var(--grey); padding-left:16px; position:relative;}
+  .gen-card li::before{content:''; position:absolute; left:0; top:7px; width:5px; height:5px; border-radius:50%; background:var(--rose);}
+  .gen-bonus{background:var(--cream); border-radius:18px; padding:22px 26px; margin-top:20px; display:flex; align-items:center; gap:16px;}
+  .gen-bonus-icon{width:36px; height:36px; border-radius:10px; background:var(--violet); display:flex; align-items:center; justify-content:center; color:white; font-size:15px; flex-shrink:0;}
+  .gen-bonus p{font-size:13.5px; color:var(--navy-dark); line-height:1.5;}
+  .gen-bonus b{display:block; font-size:14px; margin-bottom:2px;}
+
+  .pill-btn.pb-outline-dark{background:transparent; color:var(--navy-dark); border:1.5px solid rgba(13,31,60,0.2); padding:6px 6px 6px 22px;}
+  .pill-btn.pb-outline-dark .pb-arrow{background:var(--cream-soft); color:var(--navy-dark);}
+
+  /* ---------- NAV ---------- */
+  nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px 64px;
+    position:sticky; top:0; z-index:20;
+    background:rgba(251,245,239,0.88);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(13,31,60,0.08);
+  }
+  .logo{
+    font-family:'Sora', sans-serif; font-weight:800; font-size:19px;
+    display:flex; align-items:center; gap:10px;
+    color:var(--navy-dark);
+  }
+  .logo-mark{
+    width:30px; height:30px; border-radius:9px;
+    background:linear-gradient(135deg, var(--rose) 0%, var(--violet) 100%);
+    display:flex; align-items:center; justify-content:center;
+    color:white; font-weight:800; font-size:13px;
+  }
+  .nav-links{display:flex; gap:38px; font-size:14.5px; font-weight:600; color:var(--navy-dark);}
+  .nav-links span{opacity:0.62; cursor:pointer;}
+  .nav-links span.active{opacity:1;}
+  .nav-cta{
+    background:var(--navy-dark); color:var(--cream);
+    padding:11px 22px; border-radius:99px; font-size:13.5px; font-weight:700;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding:86px 64px 76px;
+    display:grid; grid-template-columns:1.15fr 0.85fr; gap:50px; align-items:center;
+    background:var(--navy-dark);
+    position:relative; overflow:hidden;
+  }
+  .hero::before{
+    content:''; position:absolute; top:-140px; right:-100px; width:420px; height:420px;
+    background:var(--rose-bright); opacity:0.32; border-radius:50%; filter:blur(30px);
+  }
+  .hero::after{
+    content:''; position:absolute; bottom:-160px; left:-120px; width:360px; height:360px;
+    background:var(--orange); opacity:0.18; border-radius:50%; filter:blur(30px);
+  }
+  .hero > div:not(.doodle), .hero-visual{position:relative;}
+  .eyebrow-pill{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--white); border:1px solid rgba(13,31,60,0.1);
+    padding:7px 14px 7px 8px; border-radius:99px; font-size:12.5px; font-weight:700;
+    color:var(--navy-dark); margin-bottom:26px;
+  }
+  .eyebrow-dot{width:8px; height:8px; border-radius:50%; background:var(--rose);}
+  .hero h1{
+    font-size:54px; line-height:1.05; font-weight:800; letter-spacing:-0.5px;
+    color:var(--white);
+  }
+  .hero h1 em{font-style:normal; color:var(--orange);}
+  .hero p{
+    margin-top:22px; font-size:17px; line-height:1.6; color:#C9D2E0; max-width:440px;
+  }
+  .hero-actions{display:flex; gap:14px; margin-top:34px;}
+  .hero-stats{display:flex; gap:34px; margin-top:44px;}
+  .hero-stat b{color:white; font-family:'Sora',sans-serif; font-size:24px; display:block;}
+  .hero-stat span{color:#8FA0BC; font-size:12.5px; font-weight:600;}
+  .btn-primary{
+    background:var(--rose); color:white; font-weight:700; font-size:15px;
+    padding:15px 26px; border-radius:12px; border:none; cursor:pointer;
+  }
+  .btn-secondary{
+    background:transparent; color:white; font-weight:700; font-size:15px;
+    padding:15px 22px; border-radius:12px; border:1.5px solid rgba(255,255,255,0.35); cursor:pointer;
+  }
+
+  .hero-visual{
+    background:var(--white); border-radius:26px; padding:32px;
+    position:relative; overflow:hidden; box-shadow:0 30px 60px rgba(0,0,0,0.25);
+  }
+  .hero-visual::before{
+    content:''; position:absolute; top:-60px; right:-60px; width:200px; height:200px;
+    background:#FCE4EA; opacity:0.9; border-radius:50%; filter:blur(10px);
+  }
+  .hv-label{color:var(--rose); font-size:12px; font-weight:700; letter-spacing:.02em; position:relative;}
+  .hv-title{color:var(--navy-dark); font-family:'Sora',sans-serif; font-weight:700; font-size:19px; margin-top:6px; position:relative;}
+  .hv-list{margin-top:22px; display:flex; flex-direction:column; gap:16px; position:relative;}
+  .hv-item{display:flex; gap:12px; align-items:flex-start;}
+  .hv-time{font-size:12px; font-weight:700; color:var(--orange); width:52px; flex-shrink:0; padding-top:2px;}
+  .hv-dot{width:9px; height:9px; border-radius:50%; background:var(--rose); margin-top:5px; flex-shrink:0;}
+  .hv-text{color:var(--grey); font-size:13.5px; line-height:1.45;}
+  .hv-text b{color:var(--navy-dark);}
+
+  /* ---------- TERRAINS SECTION ---------- */
+  .section{padding:30px 64px 90px;}
+  .section-head{max-width:560px; margin-bottom:44px;}
+  .section-head .kicker{color:var(--rose); font-weight:700; font-size:13.5px; margin-bottom:10px; display:block;}
+  .section-head h2{font-size:32px; font-weight:800; letter-spacing:-0.3px;}
+
+  .terrains{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  .terrain-card{
+    border-radius:24px; padding:32px 26px 26px;
+    position:relative; overflow:hidden;
+    display:block; min-height:280px;
+  }
+  .terrain-card.c1{background:var(--navy-dark);}
+  .terrain-card.c2{background:var(--rose);}
+  .terrain-card.c3{background:var(--yellow);}  .terrain-card::after{
+    content:''; position:absolute; left:0; right:0; bottom:0; height:12px;
+    background:repeating-linear-gradient(-45deg, rgba(255,255,255,0.3) 0 7px, transparent 7px 14px);
+  }
+  .terrain-card.c3::after{background:repeating-linear-gradient(-45deg, rgba(13,31,60,0.14) 0 7px, transparent 7px 14px);}
+  .terrain-card.clickable{cursor:pointer; transition:transform .15s ease, box-shadow .15s ease;}
+  .terrain-card.clickable:hover{transform:translateY(-4px) rotate(-0.4deg); box-shadow:0 18px 34px rgba(13,31,60,0.22);}
+  .terrain-card.disabled{opacity:0.62;}
+  .terrain-card .tc-icon{
+    width:46px; height:46px; border-radius:13px;
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom:22px; color:var(--navy-dark); font-size:19px;
+    background:rgba(255,255,255,0.92);
+  }
+  .terrain-card.c1 .tc-icon{color:var(--violet-deep);}
+  .terrain-card h3{font-size:20px; font-weight:800; margin-bottom:10px; color:white; font-family:'Sora',sans-serif;}
+  .terrain-card p{font-size:14px; line-height:1.55; color:rgba(255,255,255,0.82);}
+  .terrain-card.c3 h3, .terrain-card.c3 p, .terrain-card.c3 .tc-progress-label, .terrain-card.c3 .tc-cta{color:var(--navy-dark);}
+  .terrain-card.c3 p{opacity:0.78;}
+  .tc-tag{display:inline-block; margin-top:0; margin-bottom:14px; font-size:11.5px; font-weight:800; padding:5px 12px; border-radius:99px; background:rgba(255,255,255,0.85); color:var(--rose);}
+  .tc-progress{margin-top:22px; height:6px; border-radius:99px; background:rgba(255,255,255,0.22); overflow:hidden;}
+  .tc-progress-fill{height:100%; border-radius:99px; background:white;}
+  .terrain-card.c1 .tc-progress-fill{width:38%;}
+  .terrain-card.c2 .tc-progress-fill{width:71%;}
+  .terrain-card.c3 .tc-progress-fill{width:12%; background:var(--navy-dark);}
+  .tc-progress-label{display:flex; justify-content:space-between; font-size:11.5px; color:rgba(255,255,255,0.75); margin-top:8px; font-weight:600;}
+  .tc-cta{margin-top:20px; font-size:13px; font-weight:800; color:white; display:inline-flex; align-items:center; gap:6px;}
+
+
+  /* ---------- JOBS STRIP ---------- */
+  .jobs-strip{
+    background:var(--navy-dark); border-radius:28px; padding:48px 54px;
+    display:grid; grid-template-columns:0.8fr 1.2fr; gap:40px; align-items:center;
+  }
+  .jobs-strip h2{color:white; font-size:27px; font-weight:800; line-height:1.2;}
+  .jobs-strip p{color:#AEB9CC; margin-top:14px; font-size:14.5px; line-height:1.6;}
+  .job-chips{display:flex; flex-wrap:wrap; gap:10px;}
+  .job-chip{
+    background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
+    color:#EDF1F7; padding:11px 17px; border-radius:12px; font-size:13.5px; font-weight:600;
+  }
+
+  /* ---------- TEST DE PERSONNALITÉ ---------- */
+  .quiz-banner{
+    background:linear-gradient(135deg, var(--rose) 0%, var(--violet) 100%);
+    border-radius:28px; padding:2px; margin-bottom:26px;
+  }
+  .quiz-banner-inner{
+    background:var(--cream); border-radius:26px; padding:44px 48px;
+  }
+  .qb-kicker{display:flex; align-items:center; gap:8px; margin-bottom:14px;}
+  .qb-kicker span{font-weight:800; font-size:13px; letter-spacing:.02em;
+    background:linear-gradient(135deg, var(--rose) 0%, var(--violet) 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .quiz-banner-inner h2{font-size:26px; font-weight:800; max-width:520px;}
+  .quiz-banner-inner > p{color:var(--grey); margin-top:10px; font-size:14.5px; max-width:520px; line-height:1.6;}
+
+  .pt-card{background:var(--white); border-radius:22px; padding:40px; border:1px solid rgba(13,31,60,0.06); margin-top:30px;}
+  .pt-bar{height:6px; border-radius:99px; background:var(--cream-soft); overflow:hidden; margin-bottom:30px;}
+  .pt-bar-fill{height:100%; background:linear-gradient(90deg, var(--rose), var(--orange)); border-radius:99px; width:0%; transition:width .3s ease;}
+  .pt-step-label{display:flex; justify-content:space-between; font-size:12.5px; font-weight:700; color:var(--grey); margin-bottom:8px;}
+  .pt-question{font-size:18px; font-weight:700; margin-bottom:20px;}
+  .pt-option{
+    text-align:left; background:var(--cream); border:1.5px solid transparent; border-radius:12px;
+    padding:15px 18px; font-size:14.5px; font-weight:600; color:var(--navy-dark); cursor:pointer;
+    width:100%; display:block; margin-bottom:10px; font-family:'Manrope',sans-serif;
+  }
+  .pt-option:hover{border-color:rgba(232,25,75,0.3); background:#FDEEE4;}
+  .pt-start-btn{
+    background:var(--navy-dark); color:white; font-weight:700; font-size:15px;
+    padding:15px 28px; border-radius:12px; border:none; cursor:pointer;
+  }
+  .pt-result{display:none;}
+  .pt-result-head{text-align:center; margin-bottom:28px;}
+  .pt-result-head .pt-label{color:var(--grey); font-size:13px; font-weight:700; margin-bottom:6px;}
+  .pt-result-head h3{font-size:23px; font-weight:800;}
+  .pt-results-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  .pt-result-card{background:var(--cream); border-radius:18px; padding:24px; border:1px solid rgba(13,31,60,0.06); position:relative;}
+  .pt-terrain-tag{display:inline-block; font-size:11px; font-weight:700; padding:4px 10px; border-radius:99px; margin-bottom:12px;}
+  .pt-result-card h4{font-size:15.5px; font-weight:700; margin-bottom:8px;}
+  .pt-result-card p{font-size:12.5px; color:var(--grey); line-height:1.5; margin-bottom:16px;}
+  .pt-result-card a{display:inline-block; font-size:12.5px; font-weight:700; color:var(--navy-dark); border-bottom:1.5px solid var(--navy-dark); padding-bottom:1px;}
+  .pt-restart{margin-top:26px; text-align:center;}
+  .pt-restart button{background:transparent; border:1.5px solid rgba(13,31,60,0.15); color:var(--navy-dark); font-weight:700; font-size:13.5px; padding:11px 20px; border-radius:12px; cursor:pointer;}
+
+  /* ---------- LE SAVAIS-TU ---------- */
+  .myth-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  .myth-card{
+    border-radius:26px; padding:32px 28px 26px; position:relative; overflow:hidden;
+    min-height:420px; display:flex; flex-direction:column;
+  }
+  .myth-card.m1{background:var(--rose);}
+  .myth-card.m2{background:var(--navy-dark);}
+  .myth-card.m3{background:var(--yellow);}
+  .myth-card::after{
+    content:''; position:absolute; left:0; right:0; bottom:0; height:14px;
+    background:repeating-linear-gradient(-45deg, rgba(255,255,255,0.35) 0 8px, transparent 8px 16px);
+  }
+  .myth-card.m3::after{background:repeating-linear-gradient(-45deg, rgba(13,31,60,0.16) 0 8px, transparent 8px 16px);}
+  .myth-badge{
+    width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.18);
+    display:flex; align-items:center; justify-content:center; font-size:15px; margin-bottom:18px;
+  }
+  .myth-card.m3 .myth-badge{background:rgba(13,31,60,0.12);}
+  .myth-tag{font-size:11.5px; font-weight:800; letter-spacing:.04em; margin-bottom:14px; opacity:0.85;}
+  .myth-claim{font-size:13.5px; font-weight:700; font-style:italic; line-height:1.4; margin-bottom:18px; opacity:0.9;}
+  .myth-stat{font-family:'Sora',sans-serif; font-weight:800; font-size:44px; line-height:1; margin-bottom:10px; letter-spacing:-1px;}
+  .myth-reality{font-size:13px; line-height:1.6; margin-bottom:auto; padding-bottom:16px;}
+  .myth-reality b{font-weight:800;}
+  .myth-source{font-size:10.5px; font-weight:700; opacity:0.65; padding-top:14px; position:relative; z-index:1;}
+  .myth-card.m1 .myth-tag, .myth-card.m1 .myth-claim, .myth-card.m1 .myth-stat, .myth-card.m1 .myth-reality, .myth-card.m1 .myth-source{color:white;}
+  .myth-card.m2 .myth-tag, .myth-card.m2 .myth-claim, .myth-card.m2 .myth-reality, .myth-card.m2 .myth-source{color:#DCE3EE;}
+  .myth-card.m2 .myth-stat{color:var(--violet-bright);}
+  .myth-card.m3 .myth-tag, .myth-card.m3 .myth-claim, .myth-card.m3 .myth-stat, .myth-card.m3 .myth-reality, .myth-card.m3 .myth-source{color:var(--navy-dark);}
+  .myth-card{cursor:pointer; transition:transform .15s ease, box-shadow .15s ease;}
+  .myth-card:hover{transform:translateY(-4px); box-shadow:0 16px 32px rgba(13,31,60,0.18);}
+  .myth-hidden{display:none;}
+  .myth-card.revealed .myth-hidden{display:block; animation:mythIn .3s ease;}
+  .myth-card.revealed .myth-reveal-prompt{display:none;}
+  .myth-reveal-prompt{
+    margin-top:6px; font-size:12.5px; font-weight:800; letter-spacing:.02em;
+    position:relative; z-index:1; opacity:0.85;
+  }
+  @keyframes mythIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+  .myth-cta-row{margin-top:26px; text-align:center;}
+
+  /* ---------- PROBLÈMES D'ENTREPRISE ---------- */
+  .pb-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  .pb-card{
+    border-radius:22px; padding:28px; position:relative; overflow:hidden;
+    display:block; min-height:200px;
+  }
+  .pb-card.pb-c1{background:var(--navy-dark);}
+  .pb-card.pb-c2{background:var(--rose);}
+  .pb-card.pb-c3{background:var(--yellow);}
+  .pb-card:hover{transform:translateY(-4px); box-shadow:0 16px 32px rgba(13,31,60,0.18);}
+  .pb-card{transition:transform .15s ease, box-shadow .15s ease;}
+  .pb-quote{font-size:15px; font-weight:700; font-style:italic; line-height:1.45; margin-bottom:16px; color:white;}
+  .pb-solve{font-size:13px; line-height:1.55; color:rgba(255,255,255,0.85);}
+  .pb-solve b{color:white;}
+  .pb-card.pb-c3 .pb-quote{color:var(--navy-dark);}
+  .pb-card.pb-c3 .pb-solve{color:rgba(13,31,60,0.75);}
+  .pb-card.pb-c3 .pb-solve b{color:var(--navy-dark);}
+
+  /* ---------- 10 PRÉJUGÉS ---------- */
+  .prej-card{background:var(--white); border-radius:22px; padding:40px; border:1px solid rgba(13,31,60,0.06);}
+  .prej-bar{height:6px; border-radius:99px; background:var(--cream-soft); overflow:hidden; margin-bottom:26px;}
+  .prej-bar-fill{height:100%; background:linear-gradient(90deg, var(--rose), var(--violet)); border-radius:99px; width:0%; transition:width .3s ease;}
+  .prej-step-label{display:flex; justify-content:space-between; font-size:12.5px; font-weight:700; color:var(--grey); margin-bottom:8px;}
+  .prej-theme-tag{display:inline-block; font-size:11px; font-weight:800; letter-spacing:.03em; padding:5px 12px; border-radius:99px; margin-bottom:18px; background:var(--cream); color:var(--rose);}
+  .prej-question{font-size:19px; font-weight:700; line-height:1.4; margin-bottom:26px;}
+  .prej-vf-row{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .prej-vf-btn{
+    padding:22px; border-radius:16px; border:2px solid var(--cream-soft); background:var(--cream);
+    font-family:'Sora',sans-serif; font-weight:800; font-size:16px; color:var(--navy-dark); cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .prej-vf-btn:hover{border-color:var(--rose);}
+  .prej-vf-btn[disabled]{cursor:default;}
+  .prej-vf-btn.correct{background:#E7F6EC; border-color:#3FAE5C; color:#1F6B34;}
+  .prej-vf-btn.wrong{background:#FCE9EA; border-color:var(--rose); color:var(--rose);}
+  .prej-feedback{margin-top:22px; padding:18px 20px; border-radius:14px; background:var(--cream); font-size:14px; line-height:1.55; display:none;}
+  .prej-feedback.show{display:block;}
+  .prej-feedback b{display:block; margin-bottom:4px; font-size:13px; letter-spacing:.02em;}
+  .prej-next{margin-top:20px; display:none;}
+  .prej-next.show{display:inline-flex;}
+  .prej-intro{text-align:center;}
+  .prej-intro-facts{display:flex; justify-content:center; gap:44px; margin-bottom:28px; flex-wrap:wrap;}
+  .prej-fact{display:flex; flex-direction:column; align-items:center;}
+  .prej-fact b{font-family:'Sora',sans-serif; font-size:30px; font-weight:800; color:var(--rose);}
+  .prej-fact span{font-size:12.5px; font-weight:600; color:var(--grey); margin-top:2px;}
+  .prej-intro-text{max-width:440px; margin:0 auto 28px; color:var(--grey); font-size:14px; line-height:1.6;}
+  .prej-result{display:none; text-align:center;}
+  .prej-result .pr-score{font-family:'Sora',sans-serif; font-size:48px; font-weight:800; color:var(--rose);}
+  .prej-result p{color:var(--grey); font-size:14.5px; margin:14px auto 22px; max-width:440px; line-height:1.55;}
+  .prej-result-actions{display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
+
+  footer{padding:36px 64px; display:flex; justify-content:space-between; align-items:center; color:var(--grey); font-size:13px;}
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 1100px){
+    nav{padding:16px 20px; flex-wrap:wrap; row-gap:10px;}
+    .nav-links{display:none;}
+    .blocs-grid{grid-template-columns:1fr;}
+    .gen-grid{grid-template-columns:1fr;}
+    .hero{grid-template-columns:1fr; padding:44px 22px 40px; gap:32px;}
+    .hero h1{font-size:38px; line-height:1.1;}
+    .hero h1 .script{font-size:1.44em !important;}
+    .hero p{max-width:100%;}
+    .hero-actions{flex-wrap:wrap;}
+    .hero-stats{flex-wrap:wrap; row-gap:16px;}
+    .hero-visual{padding:24px;}
+    .section{padding:30px 20px 60px;}
+    .section-head h2{font-size:24px;}
+    .section-head h2 .script{font-size:1.44em !important;}
+    .terrains{grid-template-columns:1fr;}
+    .myth-grid{grid-template-columns:1fr;}
+    .pb-grid{grid-template-columns:1fr;}
+    .jobs-strip{grid-template-columns:1fr; padding:32px 24px;}
+    .quiz-banner-inner{padding:28px 22px;}
+    .pt-card{padding:22px;}
+    .pt-results-grid{grid-template-columns:1fr;}
+    footer{padding:24px 20px; flex-direction:column; gap:8px; text-align:center;}
+  }
+</style>
+<body>
+
+<nav>
+  <a href="index.html" class="logo"><div class="logo-mark">N</div>Ton BTS, en vrai</a>
+  <div class="nav-links">
+    <a href="index.html" style="text-decoration:none; color:inherit;"><span>Accueil</span></a>
+    <a href="metier.html" style="text-decoration:none; color:inherit;"><span>Le métier</span></a>
+    <span class="active">Tes 3 terrains d'apprentissage</span>
+    <span>Ressources</span>
+  </div>
+</nav>
+
+<section class="terrain-hero">
+  <div class="th-inner">
+    <div class="th-kicker"><div class="num">✦</div><span>LE PROGRAMME, VU DE HAUT</span></div>
+    <h1>Tes 3 terrains<br><span class="script" style="color:var(--yellow); font-size:1.5em;">d'apprentissage</span></h1>
+    <p>Tout ce que couvre ton BTS NDRC, en un seul écran — les 3 blocs professionnels, et les matières qui les soutiennent.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <span class="kicker">LES 3 BLOCS PROFESSIONNELS</span>
+    <h2>Ce que tu vas <span class="script" style="color:var(--rose); font-size:1.5em;">savoir faire</span></h2>
+    <p>Les 3 terrains du métier, avec leurs compétences clés. Clique sur un bloc pour l'explorer en détail.</p>
+  </div>
+
+  <div class="blocs-grid">
+    <a href="terrain-faceaface.html" class="bloc-card b1" style="text-decoration:none;">
+      <div class="bloc-num">1</div>
+      <div class="bloc-unit">BLOC 1 · UNITÉ U4</div>
+      <h3>Relation client et négociation-vente</h3>
+      <ul>
+        <li>Cibler et prospecter la clientèle</li>
+        <li>Négocier et accompagner la relation client</li>
+        <li>Organiser et animer un évènement commercial</li>
+        <li>Exploiter et mutualiser l'information commerciale</li>
+      </ul>
+      <div class="bloc-cta">Explorer ce terrain <span>↗</span></div>
+    </a>
+
+    <a href="terrain-digital.html" class="bloc-card b2" style="text-decoration:none;">
+      <div class="bloc-num">2</div>
+      <div class="bloc-unit">BLOC 2 · UNITÉ U5</div>
+      <h3>Relation client à distance et digitalisation</h3>
+      <ul>
+        <li>Maîtriser la relation client omnicanale</li>
+        <li>Animer la relation client digitale</li>
+        <li>Développer la relation client en e-commerce</li>
+      </ul>
+      <div class="bloc-cta">Explorer ce terrain <span>↗</span></div>
+    </a>
+
+    <a href="terrain-reseaux.html" class="bloc-card b3" style="text-decoration:none;">
+      <div class="bloc-num">3</div>
+      <div class="bloc-unit">BLOC 3 · UNITÉ U6</div>
+      <h3>Relation client et animation de réseaux</h3>
+      <ul>
+        <li>Implanter et promouvoir l'offre chez des distributeurs</li>
+        <li>Développer et piloter un réseau de partenaires</li>
+        <li>Créer et animer un réseau de vente directe</li>
+      </ul>
+      <div class="bloc-cta">Explorer ce terrain <span>↗</span></div>
+    </a>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="section-head">
+    <span class="kicker">CE QUI SOUTIENT LES 3 TERRAINS</span>
+    <h2>Pas des <span class="script" style="color:var(--violet-deep); font-size:1.5em;">matières scolaires</span></h2>
+    <p>Le programme comprend aussi 3 domaines transversaux — ils ne sont pas là pour "faire cours", ils te servent directement sur le terrain.</p>
+  </div>
+
+  <div class="gen-grid">
+    <div class="gen-card g1">
+      <div class="gen-icon">✎</div>
+      <div class="gen-unit">UNITÉ U1 · CULTURE GÉNÉRALE ET EXPRESSION</div>
+      <h3>Convaincre à l'écrit et à l'oral</h3>
+      <ul>
+        <li>Rédiger un message professionnel clair (email, compte-rendu, proposition commerciale)</li>
+        <li>Synthétiser une information complexe pour la rendre actionnable</li>
+        <li>Argumenter et défendre une position à l'oral, devant un client ou un jury</li>
+        <li>Avoir assez de culture générale pour rebondir sur n'importe quel sujet avec un client — et briser la glace en toute situation</li>
+      </ul>
+    </div>
+
+    <div class="gen-card g2">
+      <div class="gen-icon">🌐</div>
+      <div class="gen-unit">UNITÉ U2 · LANGUE VIVANTE ÉTRANGÈRE 1 (NIVEAU B2)</div>
+      <h3>Vendre au-delà des frontières</h3>
+      <ul>
+        <li>Comprendre un client, un fournisseur ou un partenaire anglophone</li>
+        <li>Présenter une offre et négocier en anglais professionnel</li>
+        <li>Traiter une documentation commerciale en langue étrangère</li>
+      </ul>
+    </div>
+
+    <div class="gen-card g3">
+      <div class="gen-icon">⚖</div>
+      <div class="gen-unit">UNITÉ U3 · CULTURE ÉCONOMIQUE, JURIDIQUE ET MANAGÉRIALE</div>
+      <h3>Comprendre l'entreprise pour mieux vendre</h3>
+      <ul>
+        <li>Lire le contexte économique et concurrentiel d'une entreprise</li>
+        <li>Connaître le cadre juridique d'une vente, d'un contrat, d'une négociation</li>
+        <li>Comprendre les enjeux de management pour dialoguer avec ta hiérarchie</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="gen-bonus">
+    <div class="gen-bonus-icon">+</div>
+    <p><b>En option : une 2ᵉ langue vivante (UF1, niveau B1)</b>Un vrai plus sur ton CV — parler une langue de plus, c'est un client de plus que tu peux servir.</p>
+  </div>
+</section>
+
+<footer>
+  <span>BTS NDRC — Bienvenue dans le métier</span>
+  <a href="index.html">← Retour à l'accueil</a>
+</footer>
+
+</body>
+</html>
